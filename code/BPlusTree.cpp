@@ -67,6 +67,12 @@ void BPTree::insert(long long x, Block *bptr) {
         }
       }
     }
+    for (int i = 0; i < cursor->size; ++ i){
+      if(cursor->key[i] == x){
+        cout << "Index already existed\n";
+        return ;
+      }
+    }
     if (cursor->size < MAX) {
       int i = 0;
       while (x > cursor->key[i] && i < cursor->size)

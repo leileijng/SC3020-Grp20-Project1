@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #include "StorageBlock.h"
 using namespace std;
-int MAX = 20;
+int MAX = 3; // The optimal MAX for the dataset may be approximately 20
 
 // BP node
 class Node {
