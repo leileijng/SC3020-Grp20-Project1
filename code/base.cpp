@@ -1,28 +1,12 @@
-// https://www.programiz.com/dsa/b-plus-tree
-
-#include <bits/stdc++.h>
-#include "BPlusTree.h"
-using namespace std;
-
-Node::Node() {
-  key = new long long[MAX + 5];
-  ptr = new Node *[MAX + 5];
-  bptr = new Block *[MAX + 5];
-}
-
-BPTree::BPTree() {
-  root = NULL;
-}
-
-// Search operation
-Block *BPTree::search(long long x) {
-  if (root == NULL) {
-    cout << "Tree is empty\n";
-  } else {
-    Node *cursor = root;
-    while (cursor->IS_LEAF == false) {
-      for (int i = 0; i < cursor->size; i++) {
-        if (x < cursor->key[i]) {
+// Search operation returns Block to be found
+Block *BPTree::search(long long x) {              // Accepts 'long long' integer representing key value of block to search for
+  if (root == NULL) {                             
+    cout << "Tree is empty\n";                    // If root is 'NULL', return message informing that tree is empty
+  } else {                
+    Node *cursor = root;                          // Else, create Node pointer 'cursor' & initialise with root, 'cursor' indicates current point of search in tree
+    while (cursor->IS_LEAF == false) {            // While cursor does not point to leaf node, continue search 
+      for (int i = 0; i < cursor->size; i++) {    // Then, iterate through keys of current node
+        if (x < cursor->key[i]) {                 // If x (key to search fo) is less than 
           cursor = cursor->ptr[i];
           break;
         }
