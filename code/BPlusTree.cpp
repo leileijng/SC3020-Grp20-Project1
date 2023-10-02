@@ -1,7 +1,5 @@
-// https://www.programiz.com/dsa/b-plus-tree
-
-#include <bits/stdc++.h>
 #include "BPlusTree.h"
+#include <iostream>
 using namespace std;
 
 Node::Node() {
@@ -548,6 +546,6 @@ int main() {
   tree.display(tree.getRoot(), 1);
 
   Block *bptr = tree.search(38638112084026600);
-  if(bptr != NULL) bptr->display();
+  if(bptr != NULL) bptr->displayStats();
   return 0;
 }

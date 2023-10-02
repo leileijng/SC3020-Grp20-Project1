@@ -1,3 +1,5 @@
+#include <iostream>
+#include "BPlusTree.h"
 // Function to insert a key-value pair into the B+ Tree.
 void BPTree::insert(long long key, Block *blockPtr) { 
   // If the tree is empty.

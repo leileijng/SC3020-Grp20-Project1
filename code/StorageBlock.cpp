@@ -1,28 +1,37 @@
-#include <bits/stdc++.h>
 #include "StorageBlock.h"
 
-using namespace std;
+// Initialize all game statistics using member initializer lists.
+Block::Block(std::string _gameDate,
+             std::string _teamIdHome,
+             int _pointsHome,
+             float _fieldGoalPercentageHome,
+             float _freeThrowPercentageHome,
+             float _threePointPercentageHome,
+             int _assistsHome,
+             int _reboundsHome,
+             int _homeTeamWins)
+    : gameDate(_gameDate),
+      teamIdHome(_teamIdHome),
+      pointsHome(_pointsHome),
+      fieldGoalPercentageHome(_fieldGoalPercentageHome),
+      freeThrowPercentageHome(_freeThrowPercentageHome),
+      threePointPercentageHome(_threePointPercentageHome),
+      assistsHome(_assistsHome),
+      reboundsHome(_reboundsHome),
+      homeTeamWins(_homeTeamWins)
+{
+}
 
-Block::Block(string _GAME_DATE_EST,
-        string _TEAM_ID_home,
-        int _PTS_home,
-        float _FG_PCT_home,
-        float _FT_PCT_home,
-        float _FG3_PCT_home,
-        int _AST_home,
-        int _REB_home,
-        int _HOME_TEAM_WINS){
-    GAME_DATE_EST = _GAME_DATE_EST;
-    TEAM_ID_home = _TEAM_ID_home;
-    PTS_home = _PTS_home;
-    FG_PCT_home = _FG_PCT_home;
-    FT_PCT_home = _FT_PCT_home;
-    FG3_PCT_home = _FG3_PCT_home;
-    AST_home = _AST_home;
-    REB_home = _REB_home;
-    HOME_TEAM_WINS = _HOME_TEAM_WINS;  
-};
-
-void Block::display(){
-    cout << GAME_DATE_EST << " " << TEAM_ID_home << " " << PTS_home << " " << FG_PCT_home << " " << FT_PCT_home << " " << FG3_PCT_home << " " << AST_home << " " << REB_home << " " << HOME_TEAM_WINS << endl;
-};
+// Display the game statistics.
+void Block::displayStats() const
+{
+    std::cout << gameDate << " "
+              << teamIdHome << " "
+              << pointsHome << " "
+              << fieldGoalPercentageHome << " "
+              << freeThrowPercentageHome << " "
+              << threePointPercentageHome << " "
+              << assistsHome << " "
+              << reboundsHome << " "
+              << homeTeamWins << std::endl;
+}

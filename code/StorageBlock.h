@@ -1,28 +1,33 @@
-#include <bits/stdc++.h>
-using namespace std;
 
-// Storage block
-class Block{
-  private:
-    string GAME_DATE_EST;
-    string TEAM_ID_home;
-    int PTS_home;
-    float FG_PCT_home;
-    float FT_PCT_home;
-    float FG3_PCT_home;
-    int AST_home;
-    int REB_home;
-    int HOME_TEAM_WINS;
+#include <cstring>
+#include <iostream>
 
-  public:
-    Block(string GAME_DATE_EST,
-        string TEAM_ID_home,
-        int PTS_home,
-        float FG_PCT_home,
-        float FT_PCT_home,
-        float FG3_PCT_home,
-        int AST_home,
-        int REB_home,
-        int HOME_TEAM_WINS);
-    void display();
+// Represents a storage block containing various game statistics.
+class Block
+{
+private:
+    std::string gameDate;
+    std::string teamIdHome;
+    int pointsHome;
+    float fieldGoalPercentageHome;
+    float freeThrowPercentageHome;
+    float threePointPercentageHome;
+    int assistsHome;
+    int reboundsHome;
+    int homeTeamWins;
+
+public:
+    // Constructor to initialize all game statistics.
+    Block(std::string gameDate,
+          std::string teamIdHome,
+          int pointsHome,
+          float fieldGoalPercentageHome,
+          float freeThrowPercentageHome,
+          float threePointPercentageHome,
+          int assistsHome,
+          int reboundsHome,
+          int homeTeamWins);
+
+    // Display the game statistics.
+    void displayStats() const;
 };
