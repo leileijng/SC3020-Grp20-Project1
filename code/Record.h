@@ -6,7 +6,7 @@
 class Record {
 private:
     std::string GAME_DATE_EST;
-    int TEAM_ID_home;
+    long long TEAM_ID_home;
     int PTS_home;
     double FG_PCT_home, FT_PCT_home, FG3_PCT_home;
     int AST_home, REB_home;
@@ -15,7 +15,7 @@ private:
 
 public:
     Record(std::string GAME_DATE_EST,
-    int TEAM_ID_home,
+    long long TEAM_ID_home,
     int PTS_home,
     double FG_PCT_home, double FT_PCT_home, double FG3_PCT_home,
     int AST_home, int REB_home,

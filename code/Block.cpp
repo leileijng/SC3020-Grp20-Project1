@@ -1,4 +1,4 @@
-#include "StorageBlock.h"
+#include "Block.h"
 
 // Initialize all game statistics using member initializer lists.
 Block::Block(std::string _gameDate,
@@ -23,7 +23,7 @@ Block::Block(std::string _gameDate,
 }
 
 // Display the game statistics.
-void Block::displayStats() const
+void Block::displayStats()
 {
     std::cout << gameDate << " "
               << teamIdHome << " "

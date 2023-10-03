@@ -29,5 +29,5 @@ public:
           int homeTeamWins);
 
     // Display the game statistics.
-    void displayStats() const;
+    void displayStats();
 };

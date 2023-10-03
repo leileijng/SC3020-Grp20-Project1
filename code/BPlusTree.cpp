@@ -12,6 +12,9 @@ BPTree::BPTree() {
   root = NULL;
 }
 
+int BPTree::getMaxKey(){
+  return MAX;
+}
 // Search operation
 Block *BPTree::search(long long x) {
   if (root == NULL) {
@@ -386,7 +389,7 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
   if (cursor == root)
     return;
   Node *parent = findParent(root, cursor);
-  int leftSibling, rightSibling;
+  int leftSibling = 0, rightSibling = 0;
   for (pos = 0; pos < parent->size + 1; pos++) {
     if (parent->ptr[pos] == cursor) {
       leftSibling = pos - 1;
@@ -507,7 +510,7 @@ void BPTree::display(Node *cursor, int depth) {
 Node *BPTree::getRoot() {
   return root;
 }
-
+/*
 int main() {
   BPTree tree;
   Block *bptr1 = new Block("22/12/2022", "1610612740", 126, 0.484, 0.926, 0.382, 25, 46, 1);
@@ -546,6 +549,7 @@ int main() {
   tree.display(tree.getRoot(), 1);
 
   Block *bptr = tree.search(38638112084026600);
+  cout<<bptr<<"here"<<endl;
   if(bptr != NULL) bptr->displayStats();
   return 0;
-}
+}*/

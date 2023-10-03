@@ -39,6 +39,7 @@ public:
     void *loadFromDisk(Address address, std::size_t size); // Load data from disk to main memory.
     Address insertToDisk(void *itemAddress, std::size_t size); // Save data to disk.
     Address updateToDisk(void *itemAddress, std::size_t size, Address diskAddress); // Update data on disk.
+    void resetBlocksAccessed();
 };
 
 #endif

@@ -18,7 +18,7 @@ bool Storage::allocateNewBlock()
     {
         return false;
     }
-    usedMemorySize += blockCapacity;
+    //usedMemorySize += blockCapacity;
     currentBlock = static_cast<char *>(memoryPool) + currentBlockCount * blockCapacity;
     usedBlockCapacity = 0;
     currentBlockCount++;
@@ -111,8 +111,7 @@ std::size_t Storage::getTotalMemorySize() const { return totalMemorySize; }
 std::size_t Storage::getUsedMemorySize() const { return usedMemorySize; }
 int Storage::getCurrentBlockCount() const { return currentBlockCount; }
 
-// Destructor
-Storage::~Storage()
-{
-   
-}
+void Storage::resetBlocksAccessed()
+  {
+    int tempBlocksAccessed = 0;
+  }

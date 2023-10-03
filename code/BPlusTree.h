@@ -1,6 +1,8 @@
+#ifndef BPTREE_H
+#define BPTREE_H
 
 #include <iostream>
-#include "StorageBlock.h"
+#include "Block.h"
 using namespace std;
 int MAX = 3; // The optimal MAX for the dataset may be approximately 20
 
@@ -30,8 +32,10 @@ class BPTree {
   public:
     BPTree();
     Block *search(long long);
+    int getMaxKey();
     void insert(long long, Block *);
     void remove(long long);
     void display(Node *, int);
     Node *getRoot();
 };
+#endif
