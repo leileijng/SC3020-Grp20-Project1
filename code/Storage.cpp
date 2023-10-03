@@ -14,11 +14,8 @@ Storage::Storage(std::size_t memorySize, std::size_t blockSize)
 
 bool Storage::allocateNewBlock()
 {
-    if (usedMemorySize + blockCapacity > totalMemorySize)
-    {
-        return false;
-    }
-    //usedMemorySize += blockCapacity;
+    if (usedMemorySize + blockCapacity > totalMemorySize) return false;
+
     currentBlock = static_cast<char *>(memoryPool) + currentBlockCount * blockCapacity;
     usedBlockCapacity = 0;
     currentBlockCount++;
@@ -37,7 +34,7 @@ Address Storage::allocateData(std::size_t requiredSize)
     {
         if (!allocateNewBlock())
         {
-            throw std::logic_error("Failed to allocate new block!");
+            throw std::logic_error("Failed to allocate new block - no more space!");
         }
     }
 
@@ -54,7 +51,7 @@ bool Storage::deallocate(Address address, std::size_t sizeToDelete)
     try
     {
         // Calculate the address to delete.
-        void *addressToDelete = static_cast<char *>(address.blockAddress) + address.offset;
+        void *addressToDelete = static_cast<char *>(address.getBlockAddress()) + address.getOffset();
         
         // Set the memory area to null.
         std::memset(addressToDelete, '\0', sizeToDelete);
@@ -64,7 +61,7 @@ bool Storage::deallocate(Address address, std::size_t sizeToDelete)
         std::memset(testBlock, '\0', blockCapacity);
 
         // If the block is empty, update the memory size and block count.
-        if (std::memcmp(testBlock, address.blockAddress, blockCapacity) == 0)
+        if (std::memcmp(testBlock, address.getBlockAddress(), blockCapacity) == 0)
         {
             usedMemorySize -= blockCapacity;
             currentBlockCount--;
@@ -85,7 +82,7 @@ bool Storage::deallocate(Address address, std::size_t sizeToDelete)
 void *Storage::loadFromDisk(Address address, std::size_t size)
 {
     void *mainMemoryAddress = operator new(size);
-    std::memcpy(mainMemoryAddress, static_cast<char *>(address.blockAddress) + address.offset, size);
+    std::memcpy(mainMemoryAddress, static_cast<char *>(address.getBlockAddress()) + address.getOffset(), size);
     return mainMemoryAddress;
 }
 
@@ -93,14 +90,14 @@ void *Storage::loadFromDisk(Address address, std::size_t size)
 Address Storage::insertToDisk(void *itemAddress, std::size_t size)
 {
     Address diskAddress = allocateData(size);
-    std::memcpy(static_cast<char *>(diskAddress.blockAddress) + diskAddress.offset, itemAddress, size);
+    std::memcpy(static_cast<char *>(diskAddress.getBlockAddress()) + diskAddress.getOffset(), itemAddress, size);
     return diskAddress;
 }
 
 // Update data on disk.
 Address Storage::updateToDisk(void *itemAddress, std::size_t size, Address diskAddress)
 {
-    std::memcpy(static_cast<char *>(diskAddress.blockAddress) + diskAddress.offset, itemAddress, size);
+    std::memcpy(static_cast<char *>(diskAddress.getBlockAddress()) + diskAddress.getOffset(), itemAddress, size);
     return diskAddress;
 }
 

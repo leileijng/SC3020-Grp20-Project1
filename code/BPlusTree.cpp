@@ -1,22 +1,65 @@
 #include "BPlusTree.h"
 #include <iostream>
+#include "Address.h"
 using namespace std;
 
+int MAX = 3; // The optimal MAX for the dataset may be approximately 20
 Node::Node() {
   key = new long long[MAX + 5];
   ptr = new Node *[MAX + 5];
-  bptr = new Block *[MAX + 5];
+  bptr = new Address *[MAX + 5];
 }
 
+// Existing BPTree constructor
 BPTree::BPTree() {
   root = NULL;
+  MAX = 3; // Initialize MAX to 3
+  numNodes = 0; // Initialize numNodes to 0
 }
+
+// New constructor that sets MAX
+BPTree::BPTree(int n) {
+  root = NULL;
+  MAX = n; // Initialize MAX to n
+  numNodes = 0; // Initialize numNodes to 0
+}
+
 
 int BPTree::getMaxKey(){
   return MAX;
 }
+
+// get the number of nodes in the B+ tree
+int BPTree::getNumNodes() {
+  return numNodes;
+}
+
+int BPTree::getNumLevels() {
+  if (root == NULL) return 0;
+  int levels = 0;
+  Node *cursor = root;
+  while (!cursor->IS_LEAF) {
+    levels++;
+    cursor = cursor->ptr[0];
+  }
+  return levels + 1; // Add 1 for the leaf level
+}
+
+void BPTree::printRootKeys() {
+  if (root == NULL) {
+    cout << "Tree is empty." << endl;
+    return;
+  }
+  cout << "Keys in the root node: ";
+  for (int i = 0; i < root->size; i++) {
+    cout << root->key[i] << " ";
+  }
+  cout << endl;
+}
+
+
 // Search operation
-Block *BPTree::search(long long x) {
+Address *BPTree::search(long long x) {
   if (root == NULL) {
     cout << "Tree is empty\n";
   } else {
@@ -45,7 +88,7 @@ Block *BPTree::search(long long x) {
 }
 
 // Insert
-void BPTree::insert(long long x, Block *bptr) {
+void BPTree::insert(long long x, Address *bptr) {
   if (root == NULL) {
     root = new Node;
     root->key[0] = x;
@@ -90,7 +133,7 @@ void BPTree::insert(long long x, Block *bptr) {
     } else {
       Node *newLeaf = new Node;
       long long virtualNode[MAX + 5];
-      Block *tmpBptr[MAX + 5];
+      Address *tmpBptr[MAX + 5];
       for (int i = 0; i < MAX; i++) {
         virtualNode[i] = cursor->key[i];
         tmpBptr[i] = cursor->bptr[i];
@@ -127,6 +170,7 @@ void BPTree::insert(long long x, Block *bptr) {
         newRoot->IS_LEAF = false;
         newRoot->size = 1;
         root = newRoot;
+
       } else {
         insertInternal(newLeaf->key[0], parent, newLeaf);
       }
@@ -195,6 +239,7 @@ void BPTree::insertInternal(long long x, Node *cursor, Node *child) {
       newRoot->IS_LEAF = false;
       newRoot->size = 1;
       root = newRoot;
+
     } else {
       insertInternal(cursor->key[cursor->size], findParent(root, cursor), newInternal);
     }
@@ -513,17 +558,17 @@ Node *BPTree::getRoot() {
 /*
 int main() {
   BPTree tree;
-  Block *bptr1 = new Block("22/12/2022", "1610612740", 126, 0.484, 0.926, 0.382, 25, 46, 1);
-  Block *bptr2 = new Block("22/12/2022", "1610612762", 120, 0.488, 0.952, 0.457, 16, 40, 1);
-  Block *bptr3 = new Block("21/12/2022", "1610612739", 114, 0.482, 0.786, 0.313, 22, 37, 1);
-  Block *bptr4 = new Block("21/12/2022", "1610612755", 113, 0.441, 0.909, 0.297, 27, 49, 1);
-  Block *bptr5 = new Block("21/12/2022", "1610612737", 108, 0.429, 1, 0.378, 22, 47, 0);
-  Block *bptr6 = new Block("21/12/2022", "1610612738", 112, 0.386, 0.84, 0.317, 26, 62, 0);
-  Block *bptr7 = new Block("21/12/2022", "1610612751", 143, 0.643, 0.875, 0.636, 42, 32, 1);
-  Block *bptr8 = new Block("21/12/2022", "1610612752", 106, 0.553, 0.611, 0.423, 25, 38, 0);
-  Block *bptr9 = new Block("21/12/2022", "1610612745", 110, 0.466, 0.647, 0.395, 22, 49, 0);
-  Block *bptr10 = new Block("21/12/2022", "1610612750", 99, 0.494, 0.7, 0.267, 23, 39, 0);
-  Block *bptr11 = new Block("21/12/2022", "1610612760", 101, 0.468, 0.84, 0.333, 19, 37, 1);
+  Address *bptr1 = new Address("22/12/2022", "1610612740", 126, 0.484, 0.926, 0.382, 25, 46, 1);
+  Address *bptr2 = new Address("22/12/2022", "1610612762", 120, 0.488, 0.952, 0.457, 16, 40, 1);
+  Address *bptr3 = new Address("21/12/2022", "1610612739", 114, 0.482, 0.786, 0.313, 22, 37, 1);
+  Address *bptr4 = new Address("21/12/2022", "1610612755", 113, 0.441, 0.909, 0.297, 27, 49, 1);
+  Address *bptr5 = new Address("21/12/2022", "1610612737", 108, 0.429, 1, 0.378, 22, 47, 0);
+  Address *bptr6 = new Address("21/12/2022", "1610612738", 112, 0.386, 0.84, 0.317, 26, 62, 0);
+  Address *bptr7 = new Address("21/12/2022", "1610612751", 143, 0.643, 0.875, 0.636, 42, 32, 1);
+  Address *bptr8 = new Address("21/12/2022", "1610612752", 106, 0.553, 0.611, 0.423, 25, 38, 0);
+  Address *bptr9 = new Address("21/12/2022", "1610612745", 110, 0.466, 0.647, 0.395, 22, 49, 0);
+  Address *bptr10 = new Address("21/12/2022", "1610612750", 99, 0.494, 0.7, 0.267, 23, 39, 0);
+  Address *bptr11 = new Address("21/12/2022", "1610612760", 101, 0.468, 0.84, 0.333, 19, 37, 1);
 
   tree.insert(48440126092625400, bptr1); // SEQ_NUMBER
   tree.insert(48862120095216400, bptr2);
@@ -548,7 +593,7 @@ int main() {
   tree.remove(55352106061125300);
   tree.display(tree.getRoot(), 1);
 
-  Block *bptr = tree.search(38638112084026600);
+  Address *bptr = tree.search(38638112084026600);
   cout<<bptr<<"here"<<endl;
   if(bptr != NULL) bptr->displayStats();
   return 0;
