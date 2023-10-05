@@ -41,6 +41,7 @@ class BPTree {
     void insert(long long, Address *);
     void remove(long long);
     void display(Node *, int);
+    int countNodes(Node *);
     Node *getRoot();
 };
 

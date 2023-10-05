@@ -534,6 +534,20 @@ Node *BPTree::findParent(Node *cursor, Node *child) {
   return parent;
 }
 
+// Count the number of tree nodes
+int BPTree:countNodes(Node *cursor){
+  if (cursor != NULL){
+    int count = 1;
+    if(cursor->IS_LEAF != true) {
+      for(int i = 0; i < cursor->size + 1; i++) {
+        count += countNodes(cursor->ptr[i]);
+      }
+    }
+    return count;
+  }
+  return 0;
+}
+
 // Print the tree
 void BPTree::display(Node *cursor, int depth) {
   if (cursor != NULL) {
