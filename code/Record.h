@@ -8,18 +8,18 @@ class Record {
 private:
     std::string GAME_DATE_EST;
     long long TEAM_ID_home;
-    int PTS_home;
-    double FG_PCT_home, FT_PCT_home, FG3_PCT_home;
-    int AST_home, REB_home;
-    int HOME_TEAM_WINS;
+    short PTS_home;
+    float FG_PCT_home, FT_PCT_home, FG3_PCT_home;
+    short AST_home, REB_home;
+    bool HOME_TEAM_WINS;
 
 public:
     Record(std::string GAME_DATE_EST,
            long long TEAM_ID_home,
-           int PTS_home,
-           double FG_PCT_home, double FT_PCT_home, double FG3_PCT_home,
-           int AST_home, int REB_home,
-           int HOME_TEAM_WINS);
+           short PTS_home,
+           float FG_PCT_home, float FT_PCT_home, float FG3_PCT_home,
+           short AST_home, short REB_home,
+           bool HOME_TEAM_WINS);
 
     // Getter and Setter for GAME_DATE_EST
     std::string getGameDateEst() const;
@@ -30,32 +30,32 @@ public:
     void setTeamIdHome(long long value);
 
     // Getter and Setter for PTS_home
-    int getPtsHome() const;
-    void setPtsHome(int value);
+    short getPtsHome() const;
+    void setPtsHome(short value);
 
     // Getter and Setter for FG_PCT_home
-    double getFgPctHome() const;
-    void setFgPctHome(double value);
+    float getFgPctHome() const;
+    void setFgPctHome(float value);
 
     // Getter and Setter for FT_PCT_home
-    double getFtPctHome() const;
-    void setFtPctHome(double value);
+    float getFtPctHome() const;
+    void setFtPctHome(float value);
 
     // Getter and Setter for FG3_PCT_home
-    double getFg3PctHome() const;
-    void setFg3PctHome(double value);
+    float getFg3PctHome() const;
+    void setFg3PctHome(float value);
 
     // Getter and Setter for AST_home
-    int getAstHome() const;
-    void setAstHome(int value);
+    short getAstHome() const;
+    void setAstHome(short value);
 
     // Getter and Setter for REB_home
-    int getRebHome() const;
-    void setRebHome(int value);
+    short getRebHome() const;
+    void setRebHome(short value);
 
     // Getter and Setter for HOME_TEAM_WINS
-    int getHomeTeamWins() const;
-    void setHomeTeamWins(int value);
+    bool getHomeTeamWins() const;
+    void setHomeTeamWins(bool value);
 
     // Calculate the size of record in bytes
     int size();

@@ -106,6 +106,7 @@ std::size_t Storage::getBlockCapacity() const { return blockCapacity; }
 std::size_t Storage::getUsedBlockCapacity() const { return usedBlockCapacity; }
 std::size_t Storage::getTotalMemorySize() const { return totalMemorySize; }
 std::size_t Storage::getUsedMemorySize() const { return usedMemorySize; }
+std::size_t Storage::getTotalBlockCount() const { return totalBlockCount; }
 int Storage::getCurrentBlockCount() const { return currentBlockCount; }
 
 void Storage::resetBlocksAccessed()

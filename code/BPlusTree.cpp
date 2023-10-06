@@ -31,7 +31,8 @@ int BPTree::getMaxKey(){
 
 // get the number of nodes in the B+ tree
 int BPTree::getNumNodes() {
-  return numNodes;
+  this->numNodes = countNodes(root);
+  return this->numNodes;
 }
 
 int BPTree::getNumLevels() {
@@ -86,6 +87,47 @@ Address *BPTree::search(long long x) {
   }
   return NULL;
 }
+
+/*// Search range operation
+//TODO:: Add this function to header file 
+Address *BPTree::searchRange(double x) {
+  //convert x into 3 digits by *1000
+  //return type need to change to vector of Address + number of travelled nodes  <pair - refer to main>
+
+  //count the number of nodes travelled 
+  if (root == NULL) {
+    cout << "Tree is empty\n";
+  } else {
+    Node *cursor = root;
+    while (cursor->IS_LEAF == false) {
+      for (int i = 0; i < cursor->size; i++) {
+        if (x < cursor->key[i]) {
+          cursor = cursor->ptr[i];
+          break;
+        }
+        if (i == cursor->size - 1) {
+          cursor = cursor->ptr[i + 1];
+          break;
+        }
+      }
+    }
+    for (int i = 0; i < cursor->size; i++) {
+      long long tempKey = cursor->key[i];
+      std::string keyStr = std::to_string(tempKey);
+      //extract first 3 digits and match - 0.5 (e.g.)
+
+      if (keyStr[0] == x) {
+        //find the first match 
+        cout << "Found first node ---- start reading address\n";
+        return cursor->bptr[i];
+        // no return yet, travel forward to find out all matching 
+
+      }
+    }
+    cout << "Not found\n";
+  }
+  return NULL;
+}*/
 
 // Insert
 void BPTree::insert(long long x, Address *bptr) {
@@ -535,7 +577,7 @@ Node *BPTree::findParent(Node *cursor, Node *child) {
 }
 
 // Count the number of tree nodes
-int BPTree:countNodes(Node *cursor){
+int BPTree::countNodes(Node *cursor){
   if (cursor != NULL){
     int count = 1;
     if(cursor->IS_LEAF != true) {

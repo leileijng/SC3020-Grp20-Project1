@@ -3,10 +3,10 @@
 // Constructor
 Record::Record(std::string GAME_DATE_EST,
                long long TEAM_ID_home,
-               int PTS_home,
-               double FG_PCT_home, double FT_PCT_home, double FG3_PCT_home,
-               int AST_home, int REB_home,
-               int HOME_TEAM_WINS)
+               short PTS_home,
+               float FG_PCT_home, float FT_PCT_home, float FG3_PCT_home,
+               short AST_home, short REB_home,
+               bool HOME_TEAM_WINS)
     : GAME_DATE_EST(GAME_DATE_EST), TEAM_ID_home(TEAM_ID_home), PTS_home(PTS_home),
       FG_PCT_home(FG_PCT_home), FT_PCT_home(FT_PCT_home), FG3_PCT_home(FG3_PCT_home),
       AST_home(AST_home), REB_home(REB_home),
@@ -31,65 +31,65 @@ void Record::setTeamIdHome(long long value) {
 }
 
 // Getter and Setter for PTS_home
-int Record::getPtsHome() const {
+short Record::getPtsHome() const {
     return PTS_home;
 }
 
-void Record::setPtsHome(int value) {
+void Record::setPtsHome(short value) {
     PTS_home = value;
 }
 
 // Getter and Setter for FG_PCT_home
-double Record::getFgPctHome() const {
+float Record::getFgPctHome() const {
     return FG_PCT_home;
 }
 
-void Record::setFgPctHome(double value) {
+void Record::setFgPctHome(float value) {
     FG_PCT_home = value;
 }
 
 // Getter and Setter for FT_PCT_home
-double Record::getFtPctHome() const {
+float Record::getFtPctHome() const {
     return FT_PCT_home;
 }
 
-void Record::setFtPctHome(double value) {
+void Record::setFtPctHome(float value) {
     FT_PCT_home = value;
 }
 
 // Getter and Setter for FG3_PCT_home
-double Record::getFg3PctHome() const {
+float Record::getFg3PctHome() const {
     return FG3_PCT_home;
 }
 
-void Record::setFg3PctHome(double value) {
+void Record::setFg3PctHome(float value) {
     FG3_PCT_home = value;
 }
 
 // Getter and Setter for AST_home
-int Record::getAstHome() const {
+short Record::getAstHome() const {
     return AST_home;
 }
 
-void Record::setAstHome(int value) {
+void Record::setAstHome(short value) {
     AST_home = value;
 }
 
 // Getter and Setter for REB_home
-int Record::getRebHome() const {
+short Record::getRebHome() const {
     return REB_home;
 }
 
-void Record::setRebHome(int value) {
+void Record::setRebHome(short value) {
     REB_home = value;
 }
 
 // Getter and Setter for HOME_TEAM_WINS
-int Record::getHomeTeamWins() const {
+bool Record::getHomeTeamWins() const {
     return HOME_TEAM_WINS;
 }
 
-void Record::setHomeTeamWins(int value) {
+void Record::setHomeTeamWins(bool value) {
     HOME_TEAM_WINS = value;
 }
 

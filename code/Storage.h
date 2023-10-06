@@ -33,6 +33,7 @@ public:
     std::size_t getUsedBlockCapacity() const;
     std::size_t getTotalMemorySize() const;
     std::size_t getUsedMemorySize() const;
+    std::size_t getTotalBlockCount() const;
     int getCurrentBlockCount() const;
 
     // Disk operations
