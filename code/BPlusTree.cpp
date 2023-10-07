@@ -12,15 +12,15 @@ Node::Node() {
 
 // Existing BPTree constructor
 BPTree::BPTree() {
-  root = NULL;
-  MAX = 3; // Initialize MAX to 3
+  root = NULL;  // Initialise root to NULL
+  MAX = 3;      // Initialize MAX to 3
   numNodes = 0; // Initialize numNodes to 0
 }
 
 // New constructor that sets MAX
 BPTree::BPTree(int n) {
-  root = NULL;
-  MAX = n; // Initialize MAX to n
+  root = NULL;  // Initialise root to NULL
+  MAX = n;      // Initialize MAX to n
   numNodes = 0; // Initialize numNodes to 0
 }
 

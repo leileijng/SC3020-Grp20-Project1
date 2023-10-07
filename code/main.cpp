@@ -82,8 +82,9 @@ int main()
       // cout << output[9] <<endl;
       Record newRec(output[0], stoll(output[1]), stoi(output[2]), stod(output[3]), stod(output[4]), stod(output[5]),
                     stoi(output[6]), stoi(output[7]), stoi(output[8]));
-      /// std::cout << "size of record is: " << newRec.size();
-      // cout<<"The size is: "<<sizeof(newRec)<<endl;
+       //std::cout << "size of record is: " << newRec.size();
+
+       //cout<<"The size is: "<<sizeof(newRec)<<endl;
       Address addrOnDisk = disk.insertToDisk(&newRec, sizeof(newRec));
       std::pair<Address *, long long> myPair(&addrOnDisk, stoll(output[9]));
       addressIdVector.push_back(myPair);
