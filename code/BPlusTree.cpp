@@ -528,10 +528,10 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
   if (cursor == root) {
     if (cursor->size == 1) {
       if (cursor->ptr[1] == child) {
-        delete[] child->key;
-        delete[] child->bptr;
-        delete[] child->ptr;
-        delete child;
+        // delete[] child->key;
+        // delete[] child->bptr;
+        // delete[] child->ptr;
+        // delete child;
         root = cursor->ptr[0];
         delete[] cursor->key;
         delete[] cursor->bptr;
@@ -540,10 +540,10 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
         cout << "Changed root node\n";
         return;
       } else if (cursor->ptr[0] == child) {
-        delete[] child->key;
-        delete[] child->bptr;
-        delete[] child->ptr;
-        delete child;
+        // delete[] child->key;
+        // delete[] child->bptr;
+        // delete[] child->ptr;
+        // delete child;
         root = cursor->ptr[1];
         delete[] cursor->key;
         delete[] cursor->bptr;
@@ -631,11 +631,11 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
     Node *leftNode = parent->ptr[leftSibling];
     leftNode->key[leftNode->size] = parent->key[leftSibling];
     leftNode->bptr[leftNode->size] = parent->bptr[leftSibling];
-    for (int i = leftNode->size + 1, j = 0; j < cursor->size; j++) {
+    for (int i = leftNode->size + 1, j = 0; j < cursor->size; i++, j++) {
       leftNode->key[i] = cursor->key[j];
       leftNode->bptr[i] = cursor->bptr[j];
     }
-    for (int i = leftNode->size + 1, j = 0; j < cursor->size + 1; j++) {
+    for (int i = leftNode->size + 1, j = 0; j < cursor->size + 1; i++, j++) {
       leftNode->ptr[i] = cursor->ptr[j];
       cursor->ptr[j] = NULL;
     }
@@ -646,11 +646,11 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
     Node *rightNode = parent->ptr[rightSibling];
     cursor->key[cursor->size] = parent->key[rightSibling - 1];
     cursor->bptr[cursor->size] = parent->bptr[rightSibling - 1];
-    for (int i = cursor->size + 1, j = 0; j < rightNode->size; j++) {
+    for (int i = cursor->size + 1, j = 0; j < rightNode->size; i++, j++) {
       cursor->key[i] = rightNode->key[j];
       cursor->bptr[i] = rightNode->bptr[j];
     }
-    for (int i = cursor->size + 1, j = 0; j < rightNode->size + 1; j++) {
+    for (int i = cursor->size + 1, j = 0; j < rightNode->size + 1; i++, j++) {
       cursor->ptr[i] = rightNode->ptr[j];
       rightNode->ptr[j] = NULL;
     }
