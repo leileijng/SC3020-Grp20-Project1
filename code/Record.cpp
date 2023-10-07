@@ -6,11 +6,11 @@ Record::Record(std::string GAME_DATE_EST,
                short PTS_home,
                float FG_PCT_home, float FT_PCT_home, float FG3_PCT_home,
                short AST_home, short REB_home,
-               bool HOME_TEAM_WINS)
+               bool HOME_TEAM_WINS, int count)
     : GAME_DATE_EST(GAME_DATE_EST), TEAM_ID_home(TEAM_ID_home), PTS_home(PTS_home),
       FG_PCT_home(FG_PCT_home), FT_PCT_home(FT_PCT_home), FG3_PCT_home(FG3_PCT_home),
       AST_home(AST_home), REB_home(REB_home),
-      HOME_TEAM_WINS(HOME_TEAM_WINS){}
+      HOME_TEAM_WINS(HOME_TEAM_WINS), count(count) {}
 
 // Getter and Setter for GAME_DATE_EST
 std::string Record::getGameDateEst() const {
@@ -93,9 +93,18 @@ void Record::setHomeTeamWins(bool value) {
     HOME_TEAM_WINS = value;
 }
 
+// Getter and Setter for count
+bool Record::getCount() const {
+    return count;
+}
+
+void Record::setCount(int _count) {
+    count = _count;
+}
+
 // Calculate the size of record in bytes
 int Record::size(){
-    return sizeof(GAME_DATE_EST) + sizeof(TEAM_ID_home) + sizeof(PTS_home) + sizeof(FG_PCT_home) + sizeof(FT_PCT_home) + sizeof(FG3_PCT_home) + sizeof(AST_home) + sizeof(REB_home) + sizeof(HOME_TEAM_WINS);
+    return sizeof(GAME_DATE_EST) + sizeof(TEAM_ID_home) + sizeof(PTS_home) + sizeof(FG_PCT_home) + sizeof(FT_PCT_home) + sizeof(FG3_PCT_home) + sizeof(AST_home) + sizeof(REB_home) + sizeof(HOME_TEAM_WINS) + sizeof(count);
 };
 
 void Record::display() const {
@@ -108,4 +117,5 @@ void Record::display() const {
     //std::cout << "Assists (Home): " << AST_home << std::endl;
     //std::cout << "Rebounds (Home): " << REB_home << std::endl;
     //std::cout << "Home Team Wins: " << (HOME_TEAM_WINS ? "Yes" : "No") << std::endl;
+    std::cout << "Count: " << count << std::endl;
 }

@@ -12,6 +12,7 @@ private:
     float FG_PCT_home, FT_PCT_home, FG3_PCT_home;
     short AST_home, REB_home;
     bool HOME_TEAM_WINS;
+    int count;
 
 public:
     Record(std::string GAME_DATE_EST,
@@ -56,6 +57,10 @@ public:
     // Getter and Setter for HOME_TEAM_WINS
     bool getHomeTeamWins() const;
     void setHomeTeamWins(bool value);
+
+    // Getter and Setter for count
+    bool getCount() const;
+    void setCount(int _count);
 
     // Calculate the size of record in bytes
     int size();

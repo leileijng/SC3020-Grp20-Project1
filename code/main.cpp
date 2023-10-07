@@ -7,11 +7,13 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
 // Utility function to split a string by tab
 std::vector<std::string> splitStringByTab(const std::string &str);
+std::map<long long, Address *> recIndex2address;
 
 // Exercise 1: Store data on disk and report statistics
 void exercise1(std::vector<std::pair<Address *, long long> > &, Storage &disk);
@@ -56,8 +58,9 @@ int main()
 
     // exercise 5 - no yet done
     long long deleteUpperBound = 30000000000000000LL;
+    exercise5(deleteUpperBound, tree, disk);
     // tree.removeKeysBelow(deleteUpperBound);
-    tree.remove(28947071061911480);
+    // tree.remove(28947071061911480);
 }
 
 std::vector<std::string> splitStringByTab(const std::string &str)
@@ -102,7 +105,7 @@ void exercise1(std::vector<std::pair<Address *, long long> > &addressIdVector, S
             }
             // cout << output[9] <<endl;
             Record newRec(output[0], stoll(output[1]), stoi(output[2]), stod(output[3]), stod(output[4]), stod(output[5]),
-                          stoi(output[6]), stoi(output[7]), stoi(output[8]));
+                          stoi(output[6]), stoi(output[7]), stoi(output[8]), 0);
             /// std::cout << "size of record is: " << newRec.size();
             // cout<<"The size is: "<<sizeof(newRec)<<endl;
             Address *addrOnDisk = new Address(disk.insertToDisk(&newRec, sizeof(newRec)));
@@ -159,7 +162,17 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
 {
     for (const auto &pair : addressIdVector)
     {
-        tree.insert(pair.second, pair.first);
+        Address* address = pair.first;
+        long long recIndex = pair.second;
+
+        if(recIndex2address.find(recIndex) == recIndex2address.end()){
+            recIndex2address[recIndex] = address;
+            tree.insert(recIndex, address);
+        }
+        
+        Record *record = static_cast<Record *>(disk.loadFromDisk(*recIndex2address[recIndex], sizeof(Record)));
+        record->setCount(record->getCount() + 1);
+        delete record;
     }
 
     tree.display(tree.getRoot(), 1);
@@ -205,6 +218,7 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVec
     if (result.empty())
         return;
     float sum_FG3_PCT_home = 0;
+    int countOfRecords = 0;
     for (Address *address : result)
     {
         if (address == nullptr)
@@ -216,16 +230,17 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVec
         Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
         if (record != nullptr)
         {
-            sum_FG3_PCT_home += record->getFg3PctHome();
+            sum_FG3_PCT_home += record->getFg3PctHome() * record->getCount();
+            countOfRecords += record->getCount();
             // record->display();  // Assuming you have a display() method in your Record class
             delete record;
         }
     }
 
-    // std::cout << "The total number of records: " << result.size() << std::endl;
+    std::cout << "The total number of records: " << countOfRecords << std::endl;
     std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
     std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-    std::cout << "Average of FG3_PCT_home: " << sum_FG3_PCT_home / result.size() << std::endl;
+    std::cout << "Average of FG3_PCT_home: " << sum_FG3_PCT_home / countOfRecords << std::endl;
 
     float targetFgPctHome = 0.5;
     // brute force search
@@ -233,6 +248,7 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVec
     disk.resetUniqueBlocksAccessed();
     disk.resetBlocksAccessed();
     std::vector<Record> matchingRecords;
+    float bf_sum_FG3_PCT_home = 0;
     auto start = std::chrono::high_resolution_clock::now();  // Start time
     for (const auto &pair : addressIdVector)
     {
@@ -250,6 +266,7 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVec
         {
             if (record->getFgPctHome() == targetFgPctHome)
             { // Assuming you have a getFgPctHome() method in your Record class
+                bf_sum_FG3_PCT_home += record->getFg3PctHome()
                 matchingRecords.push_back(*record);
             }
             delete record; // Don't forget to delete the dynamically allocated memory
@@ -263,7 +280,7 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVec
     // Display the statistics
     std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
     std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-
+    std::cout << "Average of FG3_PCT_home: " << bf_sum_FG3_PCT_home / matchingRecords.size() << std::endl;
     std::cout << "The total number of records between xxx and xxx: " << matchingRecords.size() << endl;
 }
 
@@ -287,6 +304,7 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
     if (result.empty())
         return;
     float sum_FG3_PCT_home = 0;
+    int countOfRecords = 0;
     for (Address *address : result)
     {
         if (address == nullptr)
@@ -298,16 +316,17 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
         Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
         if (record != nullptr)
         {
-            sum_FG3_PCT_home += record->getFg3PctHome();
+            sum_FG3_PCT_home += record->getFg3PctHome() * record->getCount();
+            countOfRecords += record->getCount();
             // record->display();  // Assuming you have a display() method in your Record class
             delete record;
         }
     }
 
-    // std::cout << "The total number of records: " << result.size() << std::endl;
+    std::cout << "The total number of records: " << countOfRecords << std::endl;
     std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
     std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-    std::cout << "Average of FG3_PCT_home: " << sum_FG3_PCT_home / result.size() << std::endl;
+    std::cout << "Average of FG3_PCT_home: " << sum_FG3_PCT_home / countOfRecords << std::endl;
 
 
     // brute force search
@@ -315,6 +334,7 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
     disk.resetUniqueBlocksAccessed();
     disk.resetBlocksAccessed();
     std::vector<Record> matchingRecords;
+    float bf_sum_FG3_PCT_home = 0;
     auto start = std::chrono::high_resolution_clock::now();  // Start time
     for (const auto &pair : addressIdVector)
     {
@@ -332,6 +352,7 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
         {
             if (record->getFgPctHome() >= 0.6 && record->getFg3PctHome() <= 1)
             { // Assuming you have a getFgPctHome() method in your Record class
+                bf_sum_FG3_PCT_home += record->getFg3PctHome()
                 matchingRecords.push_back(*record);
             }
             delete record; // Don't forget to delete the dynamically allocated memory
@@ -345,7 +366,27 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
     // Display the statistics
     std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
     std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-
+    std::cout << "Average of FG3_PCT_home: " << bf_sum_FG3_PCT_home / matchingRecords.size() << std::endl;
     std::cout << "The total number of records between "<<lowerBound <<" and " << upperBound << "is: " << matchingRecords.size() << endl;
 
+}
+
+// Exercise 5: Range remove
+void exercise5(long long deleteUpperBound, BPTree &tree, Storage &disk){
+    std::vector<Address*> deletedRecords = tree.removeKeysBelow(deleteUpperBound);
+
+    if (result.empty())
+        return;
+    int countOfRecords = 0;
+    for (Address *address : result)
+    {
+        Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
+        if (record != nullptr)
+        {
+            countOfRecords += record->getCount();
+            // record->display();  // Assuming you have a display() method in your Record class
+            delete record;
+        }
+    }
+    std::cout << "The total number of records: " << countOfRecords << std::endl;
 }

@@ -71,7 +71,10 @@
     "iterator": "cpp",
     "utility": "cpp",
     "__tree": "cpp",
-    "set": "cpp"
+    "set": "cpp",
+    "__memory": "cpp",
+    "filesystem": "cpp",
+    "map": "cpp"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "clang",

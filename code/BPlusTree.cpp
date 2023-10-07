@@ -661,13 +661,11 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
   }
 }
 
-void BPTree::removeKeysBelow(long long x) {
+std::vector<Address*> BPTree::removeKeysBelow(long long x) {
   if (root == NULL) {
     cout << "Tree empty\n";
-    return; // No records deleted
+    return NULL; // No records deleted
   }
-
-  int count = 0; // Counter for deleted records
 
   // Start from the root
   Node *cursor = root;
@@ -677,36 +675,59 @@ void BPTree::removeKeysBelow(long long x) {
     cursor = cursor->ptr[0];
   }
 
-  
-  // Now traverse the leaf nodes to remove keys below x
-  while (cursor != nullptr) {
-    bool removed = false;
-    for (int i = 0; i < cursor->size; ) {
-      if (cursor->key[i] < x) {
-        cout<<"count"<<count<<endl;
-        long long keyToRemove = cursor->key[i];
-        cout<<"delete index: "<<keyToRemove<<endl;
-        // Remove this key and handle underflow
-        remove(keyToRemove);
-        removed = true;
-        count++; // Increment the counter
+  vector <long long> removeKeys;
+  vector <Address*> result;
+  bool finded = false;
+  while(true){
+    for(int i = 0; i < cursor->size; ++ i){
+      if(cursor->key[i] < x){
+        removeKeys.push_back(cursor->key[i]);
+        result.push_back(cursor->bptr[i]);
       } else {
-        i++;
+        finded = true;
+        break;
       }
     }
-
-    if (removed) {
-      // If keys were removed, cursor might have been deleted or changed.
-      // So, we reset cursor to the beginning to continue the operation.
-      cursor = root;
-      while (cursor->IS_LEAF == false) {
-        cursor = cursor->ptr[0];
-      }
-    } else {
-      cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
+    if(finded) break;
+    else {
+      cursor = cursor->ptr[cursor->size];
     }
   }
-  cout<<"deleted " <<count << " records"<<endl;
+
+  for(int i = 0; i < removeKeys.size(); ++ i){
+    remove(removeKeys[i]);
+  }
+  
+  return result;
+  
+  // // Now traverse the leaf nodes to remove keys below x
+  // while (cursor != nullptr) {
+  //   bool removed = false;
+  //   for (int i = 0; i < cursor->size; ) {
+  //     if (cursor->key[i] < x) {
+  //       cout<<"count"<<count<<endl;
+  //       long long keyToRemove = cursor->key[i];
+  //       cout<<"delete index: "<<keyToRemove<<endl;
+  //       // Remove this key and handle underflow
+  //       remove(keyToRemove);
+  //       removed = true;
+  //       count++; // Increment the counter
+  //     } else {
+  //       i++;
+  //     }
+  //   }
+
+  //   if (removed) {
+  //     // If keys were removed, cursor might have been deleted or changed.
+  //     // So, we reset cursor to the beginning to continue the operation.
+  //     cursor = root;
+  //     while (cursor->IS_LEAF == false) {
+  //       cursor = cursor->ptr[0];
+  //     }
+  //   } else {
+  //     cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
+  //   }
+  // }
 }
 
 
