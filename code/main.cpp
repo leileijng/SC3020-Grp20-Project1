@@ -14,16 +14,16 @@ using namespace std;
 std::vector<std::string> splitStringByTab(const std::string &str);
 
 // Exercise 1: Store data on disk and report statistics
-void exercise1(std::vector<std::pair<Address *, long long> > &addressIdVector, Storage &disk);
+void exercise1(std::vector<std::pair<Address *, long long> > &, Storage &disk);
 
 // Exercise 2: Build B+ tree and report statistics
-void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVector, BPTree &tree);
+void exercise2(const std::vector<std::pair<Address *, long long> > &, BPTree &tree);
 
 // Exercise 3: Exact match search
-void exercise3(long long target, BPTree &tree, Storage &disk);
+void exercise3(const std::vector<std::pair<Address *, long long> > &, long long target, BPTree &tree, Storage &disk);
 
 // Exercise 4: Range search
-void exercise4(long long lowerBound, long long upperBound, BPTree &tree, Storage &disk);
+void exercise4(const std::vector<std::pair<Address *, long long> > &, long long lowerBound, long long upperBound, BPTree &tree, Storage &disk);
 
 // Main function
 int main()
@@ -48,15 +48,15 @@ int main()
     exercise2(addressIdVector, tree);
 
     long long target = 50000000000000000LL;
-    exercise3(target, tree, disk);
+    exercise3(addressIdVector, target, tree, disk);
 
     long long lowerBound = 60000000000000000LL;
     long long upperBound = 100000000000000000LL;
-    exercise4(lowerBound, upperBound, tree, disk);
+    exercise4(addressIdVector, lowerBound, upperBound, tree, disk);
 
-    //exercise 5 - no yet done
+    // exercise 5 - no yet done
     long long deleteUpperBound = 30000000000000000LL;
-    //tree.removeKeysBelow(deleteUpperBound);
+    // tree.removeKeysBelow(deleteUpperBound);
     tree.remove(28947071061911480);
 }
 
@@ -161,69 +161,50 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
     {
         tree.insert(pair.second, pair.first);
     }
-    /*
-      tree.display(tree.getRoot(), 1);
 
-      cout << "Info about B+ Tree:" << endl;
-      std::cout << std::string(60, '-') << std::endl;
-      std::cout << std::setw(30) << std::left << "Parameter"
-                << std::setw(30) << std::left << "Value" << std::endl;
-      std::cout << std::string(60, '-') << std::endl;
+    tree.display(tree.getRoot(), 1);
 
-      // Print the table content
-      std::cout << std::setw(30) << std::left << "Parameter n of B+ Tree:"
-                << std::setw(30) << std::left << tree.getMaxKey() << std::endl;
+    cout << "Info about B+ Tree:" << endl;
+    std::cout << std::string(60, '-') << std::endl;
+    std::cout << std::setw(30) << std::left << "Parameter"
+              << std::setw(30) << std::left << "Value" << std::endl;
+    std::cout << std::string(60, '-') << std::endl;
 
-      std::cout << std::setw(30) << std::left << "number of nodes:"
-                << std::setw(30) << std::left << tree.getNumNodes() << std::endl;
+    // Print the table content
+    std::cout << std::setw(30) << std::left << "Parameter n of B+ Tree:"
+              << std::setw(30) << std::left << tree.getMaxKey() << std::endl;
 
-      std::cout << std::setw(30) << std::left << "number of levels:"
-                << std::setw(30) << std::left << tree.getNumLevels() << std::endl;
+    std::cout << std::setw(30) << std::left << "number of nodes:"
+              << std::setw(30) << std::left << tree.getNumNodes() << std::endl;
 
-      //std::cout << std::setw(30) << std::left << "Content of Root:"
-       //         << std::setw(30) << std::left << tree.getRoot() << std::endl;
+    std::cout << std::setw(30) << std::left << "number of levels:"
+              << std::setw(30) << std::left << tree.getNumLevels() << std::endl;
 
-      // Print the table footer
-      std::cout << std::string(60, '-') << std::endl;
-    */
+    // std::cout << std::setw(30) << std::left << "Content of Root:"
+    //          << std::setw(30) << std::left << tree.getRoot() << std::endl;
+
+    // Print the table footer
+    std::cout << std::string(60, '-') << std::endl;
 }
 
-// Common function to handle both exact and range searches
-void handleSearch(long long lowerBound, long long upperBound, BPTree &tree, Storage &disk, bool isExactSearch)
+// Exercise 3: Exact match search
+void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVector, long long target, BPTree &tree, Storage &disk)
 {
-    vector<Address *> result;
-    if (isExactSearch)
-    {
-        result = tree.searchExact(lowerBound);
-    }
-    else
-    {
-        result = tree.searchRange(lowerBound, upperBound);
-    }
+    disk.resetUniqueBlocksAccessed();
+    disk.resetBlocksAccessed();
+    int indexNodeCount = 0;
+    int indexNodeLeafCount = 0;
+    int dataBlockCount = 0;
 
+    std::vector<Address *> result = tree.searchExact(target, indexNodeCount, indexNodeLeafCount);
+
+    // Display the statistics
+    std::cout << "Number of index nodes (non-leaf) accessed: " << indexNodeCount << std::endl;
+    std::cout << "Number of index nodes (leaf) accessed: " << indexNodeLeafCount << std::endl;
+    // std::cout << "Number of data blocks accessed: " << dataBlockCount << std::endl;
     if (result.empty())
-    {
-        if (isExactSearch)
-        {
-            std::cout << "No keys found for " << lowerBound << std::endl;
-        }
-        else
-        {
-            std::cout << "No keys found in the range [" << lowerBound << ", " << upperBound << "]" << std::endl;
-        }
         return;
-    }
-
-    std::cout << "Keys found: ";
-    if (isExactSearch)
-    {
-        std::cout << lowerBound << std::endl;
-    }
-    else
-    {
-        std::cout << "in the range [" << lowerBound << ", " << upperBound << "]" << std::endl;
-    }
-
+    float sum_FG3_PCT_home = 0;
     for (Address *address : result)
     {
         if (address == nullptr)
@@ -235,22 +216,136 @@ void handleSearch(long long lowerBound, long long upperBound, BPTree &tree, Stor
         Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
         if (record != nullptr)
         {
+            sum_FG3_PCT_home += record->getFg3PctHome();
             // record->display();  // Assuming you have a display() method in your Record class
             delete record;
         }
     }
 
-    std::cout << "The total number of records: " << result.size() << std::endl;
-}
+    // std::cout << "The total number of records: " << result.size() << std::endl;
+    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
+    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
+    std::cout << "Average of FG3_PCT_home: " << sum_FG3_PCT_home / result.size() << std::endl;
 
-// Exercise 3: Exact match search
-void exercise3(long long target, BPTree &tree, Storage &disk)
-{
-    handleSearch(target, 0, tree, disk, true);
+    float targetFgPctHome = 0.5;
+    // brute force search
+    cout<<"------------Brute Force!!"<<endl;
+    disk.resetUniqueBlocksAccessed();
+    disk.resetBlocksAccessed();
+    std::vector<Record> matchingRecords;
+    auto start = std::chrono::high_resolution_clock::now();  // Start time
+    for (const auto &pair : addressIdVector)
+    {
+        Address *address = pair.first;
+
+        if (address == nullptr)
+        {
+            std::cout << "Address is null. Skipping this record." << std::endl;
+            continue;
+        }
+        // Load the record from disk
+        Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
+
+        if (record != nullptr)
+        {
+            if (record->getFgPctHome() == targetFgPctHome)
+            { // Assuming you have a getFgPctHome() method in your Record class
+                matchingRecords.push_back(*record);
+            }
+            delete record; // Don't forget to delete the dynamically allocated memory
+        }
+    }
+
+
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
+    // Display the statistics
+    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
+    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
+
+    std::cout << "The total number of records between xxx and xxx: " << matchingRecords.size() << endl;
 }
 
 // Exercise 4: Range search
-void exercise4(long long lowerBound, long long upperBound, BPTree &tree, Storage &disk)
+void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVector, long long lowerBound, long long upperBound, BPTree &tree, Storage &disk)
 {
-    handleSearch(lowerBound, upperBound, tree, disk, false);
+    cout << "-----------------------exercise 4-------------------------" << endl;
+    disk.resetUniqueBlocksAccessed();
+    disk.resetBlocksAccessed();
+    int indexNodeCount = 0;
+    int indexNodeLeafCount = 0;
+    int dataBlockCount = 0;
+    double avgFg3PctHome = 0.0;
+
+    std::vector<Address *> result = tree.searchRange(lowerBound, upperBound, indexNodeCount, indexNodeLeafCount);
+
+    // Display the statistics
+    std::cout << "Number of index nodes (non-leaf) accessed: " << indexNodeCount << std::endl;
+    std::cout << "Number of index nodes (leaf) accessed: " << indexNodeLeafCount << std::endl;
+    // std::cout << "Number of data blocks accessed: " << dataBlockCount << std::endl;
+    if (result.empty())
+        return;
+    float sum_FG3_PCT_home = 0;
+    for (Address *address : result)
+    {
+        if (address == nullptr)
+        {
+            std::cout << "Address is null. No data to display." << std::endl;
+            continue;
+        }
+
+        Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
+        if (record != nullptr)
+        {
+            sum_FG3_PCT_home += record->getFg3PctHome();
+            // record->display();  // Assuming you have a display() method in your Record class
+            delete record;
+        }
+    }
+
+    // std::cout << "The total number of records: " << result.size() << std::endl;
+    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
+    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
+    std::cout << "Average of FG3_PCT_home: " << sum_FG3_PCT_home / result.size() << std::endl;
+
+
+    // brute force search
+    cout<<"------------Brute Force!!"<<endl;
+    disk.resetUniqueBlocksAccessed();
+    disk.resetBlocksAccessed();
+    std::vector<Record> matchingRecords;
+    auto start = std::chrono::high_resolution_clock::now();  // Start time
+    for (const auto &pair : addressIdVector)
+    {
+        Address *address = pair.first;
+
+        if (address == nullptr)
+        {
+            std::cout << "Address is null. Skipping this record." << std::endl;
+            continue;
+        }
+        // Load the record from disk
+        Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
+
+        if (record != nullptr)
+        {
+            if (record->getFgPctHome() >= 0.6 && record->getFg3PctHome() <= 1)
+            { // Assuming you have a getFgPctHome() method in your Record class
+                matchingRecords.push_back(*record);
+            }
+            delete record; // Don't forget to delete the dynamically allocated memory
+        }
+    }
+
+
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
+    // Display the statistics
+    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
+    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
+
+    std::cout << "The total number of records between "<<lowerBound <<" and " << upperBound << "is: " << matchingRecords.size() << endl;
+
 }

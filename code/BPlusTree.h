@@ -34,8 +34,8 @@ class BPTree {
     BPTree();
     BPTree(int n = 3); // Constructor that sets MAX
     Address *search(long long);
-    vector<Address*> searchExact(long long);
-    vector<Address*> searchRange(long long, long long);
+    vector<Address*> searchExact(long long, int &, int &);
+    vector<Address*> searchRange(long long, long long, int &, int &);
     int getMaxKey(); // Method to get the parameter n of the B+ tree
     int getNumNodes(); // Method to get the number of nodes in the B+ tree
     int getNumLevels(); // Method to get the number of levels in the B+ tree

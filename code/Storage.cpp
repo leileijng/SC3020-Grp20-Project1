@@ -13,9 +13,26 @@ Storage::Storage(std::size_t memorySize, std::size_t blockSize)
     currentBlock = nullptr;
 }
 
+//  to reset the set
+void Storage::resetUniqueBlocksAccessed()
+{
+    uniqueBlocksAccessed.clear();
+}
+
+int Storage::getUniqueBlocksAccessed()
+{
+    return uniqueBlocksAccessed.size();
+}
+
+int Storage::getBlocksAccessedCount()
+{
+    return blocksAccessedCount;
+}
+
 bool Storage::allocateNewBlock()
 {
-    if (usedMemorySize + blockCapacity > totalMemorySize) return false;
+    if (usedMemorySize + blockCapacity > totalMemorySize)
+        return false;
 
     currentBlock = static_cast<char *>(memoryPool) + currentBlockCount * blockCapacity;
     usedBlockCapacity = 0;
@@ -53,7 +70,7 @@ bool Storage::deallocate(Address address, std::size_t sizeToDelete)
     {
         // Calculate the address to delete.
         void *addressToDelete = static_cast<char *>(address.getBlockAddress()) + address.getOffset();
-        
+
         // Set the memory area to null.
         std::memset(addressToDelete, '\0', sizeToDelete);
 
@@ -83,6 +100,8 @@ bool Storage::deallocate(Address address, std::size_t sizeToDelete)
 void *Storage::loadFromDisk(Address address, std::size_t size)
 {
     void *mainMemoryAddress = operator new(size);
+    uniqueBlocksAccessed.insert(address.getBlockAddress()); // Insert the block address
+    blocksAccessedCount++;
     std::memcpy(mainMemoryAddress, static_cast<char *>(address.getBlockAddress()) + address.getOffset(), size);
     return mainMemoryAddress;
 }
@@ -111,6 +130,6 @@ std::size_t Storage::getTotalBlockCount() const { return totalBlockCount; }
 int Storage::getCurrentBlockCount() const { return currentBlockCount; }
 
 void Storage::resetBlocksAccessed()
-  {
-    int tempBlocksAccessed = 0;
-  }
+{
+    blocksAccessedCount = 0;
+}

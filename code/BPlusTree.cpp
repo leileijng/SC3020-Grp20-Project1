@@ -3,6 +3,7 @@
 #include "Address.h"
 #include "Record.h"
 #include <cmath>
+#include <chrono> 
 using namespace std;
 
 int MAX = 3; // The optimal MAX for the dataset may be approximately 20
@@ -94,7 +95,9 @@ Address *BPTree::search(long long x) {
     return num / std::pow(10, length - 3);
 }
 
-std::vector<Address*> BPTree::searchExact(long long x) {
+std::vector<Address*> BPTree::searchExact(long long x, int &leafNodeCount, int &nonLeafNodeCount)  {
+    auto start = std::chrono::high_resolution_clock::now();  // Start time
+
     std::vector<Address*> result;
     if (root == NULL) {
         std::cout << "Tree is empty\n";
@@ -106,22 +109,29 @@ std::vector<Address*> BPTree::searchExact(long long x) {
     // Start from the root
     Node *cursor = root;
 
+    leafNodeCount = 0;
+    nonLeafNodeCount = 0;
     // Traverse down to the leaf level
     while (cursor->IS_LEAF == false) {
-        for (int i = 0; i < cursor->size; i++) {
-            if (x < cursor->key[i]) {
-                cursor = cursor->ptr[i];
-                break;
-            }
-            if (i == cursor->size - 1) {
-                cursor = cursor->ptr[i + 1];
-                break;
-            }
-        }
-    }
+       // Increment index node counter
+      for (int i = 0; i < cursor->size; i++) {
+          long long first3DigitsOfKey = getFirst3Digits(cursor->key[i]);
+          if (first3DigitsOfX < first3DigitsOfKey) {
+              cursor = cursor->ptr[i];
+              nonLeafNodeCount++; 
+              break;
+          }
+          if (i == cursor->size - 1) {
+              cursor = cursor->ptr[i + 1];
+              nonLeafNodeCount++; 
+              break;
+          }
+      }
+  }
 
     // Now traverse the leaf nodes to collect the keys that match the first 3 digits
     while (cursor != nullptr) {
+      leafNodeCount++;
         for (int i = 0; i < cursor->size; i++) {
             long long first3DigitsOfKey = getFirst3Digits(cursor->key[i]);
             if (first3DigitsOfKey == first3DigitsOfX) {
@@ -130,12 +140,21 @@ std::vector<Address*> BPTree::searchExact(long long x) {
         }
         cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
     }
+
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
+
     return result;
 }
 
+std::vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAccessed, int &nonLeafNodeCount) {
+    auto start = std::chrono::high_resolution_clock::now();  // Start time
 
-std::vector<Address*> BPTree::searchRange(long long x, long long y) {
     std::vector<Address*> result;
+    nodesAccessed = 0;  // Initialize the counter to zero
+    nonLeafNodeCount = 0;
+
     if (root == NULL) {
         std::cout << "Tree is empty\n";
         return result;
@@ -143,16 +162,18 @@ std::vector<Address*> BPTree::searchRange(long long x, long long y) {
 
     // Start from the root
     Node *cursor = root;
+    nodesAccessed++;  // Increment the counter as we've accessed the root
 
     // Traverse down to the leaf level
     while (cursor->IS_LEAF == false) {
         for (int i = 0; i < cursor->size; i++) {
             if (x < cursor->key[i]) {
-              //cout<<"testing:"<<x<<cursor->key[i]<<endl;
+                nodesAccessed++;
                 cursor = cursor->ptr[i];
                 break;
             }
             if (i == cursor->size - 1) {
+                nodesAccessed++;
                 cursor = cursor->ptr[i + 1];
                 break;
             }
@@ -161,7 +182,7 @@ std::vector<Address*> BPTree::searchRange(long long x, long long y) {
 
     // Now traverse the leaf nodes to collect the keys in the range [x, y]
     while (cursor != nullptr) {
-              //cout<<"testing2:"<<x<<cursor->key[0]<<endl;
+        nonLeafNodeCount++;  // Increment the counter as we're about to access a new node
         for (int i = 0; i < cursor->size; i++) {
             if (cursor->key[i] >= x && cursor->key[i] <= y) {
                 result.push_back(cursor->bptr[i]);
@@ -173,8 +194,12 @@ std::vector<Address*> BPTree::searchRange(long long x, long long y) {
         }
         cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
     }
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
     return result;
 }
+
 
 // Insertion Operation for B+ tree
 void BPTree::insert(long long x, Address *bptr) {

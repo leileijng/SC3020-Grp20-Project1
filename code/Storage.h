@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include "Address.h"
+#include <set>
 
 class Storage
 {
@@ -20,6 +21,8 @@ private:
     void *currentBlock;             // Pointer to the current block being accessed.
 
     void initializeMemoryPool();    // Initialize the memory pool.
+
+    std::set<void*> uniqueBlocksAccessed; 
 
 public:
     Storage(std::size_t memorySize, std::size_t blockSize);
@@ -41,6 +44,9 @@ public:
     Address insertToDisk(void *itemAddress, std::size_t size); // Save data to disk.
     Address updateToDisk(void *itemAddress, std::size_t size, Address diskAddress); // Update data on disk.
     void resetBlocksAccessed();
+    void resetUniqueBlocksAccessed();
+    int getUniqueBlocksAccessed();
+    int getBlocksAccessedCount();
 };
 
 #endif
