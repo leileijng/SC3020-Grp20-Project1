@@ -99,8 +99,8 @@ int Record::size(){
 };
 
 void Record::display() const {
-    //std::cout << "Game Date: " << GAME_DATE_EST << std::endl;
-    //std::cout << "Team ID (Home): " << TEAM_ID_home << std::endl;
+    std::cout << "Game Date: " << GAME_DATE_EST << std::endl;
+    std::cout << "Team ID (Home): " << TEAM_ID_home << std::endl;
     //std::cout << "Points (Home): " << PTS_home << std::endl;
     std::cout << "Field Goal % (Home): " << FG_PCT_home << std::endl;
     //std::cout << "Free Throw % (Home): " << FT_PCT_home << std::endl;

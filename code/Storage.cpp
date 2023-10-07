@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstring>
+#include "Record.h"
 
 Storage::Storage(std::size_t memorySize, std::size_t blockSize)
     : totalMemorySize(memorySize), blockCapacity(blockSize), totalBlockCount(memorySize / blockSize),

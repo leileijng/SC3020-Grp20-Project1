@@ -102,7 +102,7 @@ std::vector<Address*> BPTree::searchRange(long long x, long long y) {
     while (cursor->IS_LEAF == false) {
         for (int i = 0; i < cursor->size; i++) {
             if (x < cursor->key[i]) {
-              cout<<"testing:"<<x<<cursor->key[i]<<endl;
+              //cout<<"testing:"<<x<<cursor->key[i]<<endl;
                 cursor = cursor->ptr[i];
                 break;
             }
@@ -115,7 +115,7 @@ std::vector<Address*> BPTree::searchRange(long long x, long long y) {
 
     // Now traverse the leaf nodes to collect the keys in the range [x, y]
     while (cursor != nullptr) {
-              cout<<"testing2:"<<x<<cursor->key[0]<<endl;
+              //cout<<"testing2:"<<x<<cursor->key[0]<<endl;
         for (int i = 0; i < cursor->size; i++) {
             if (cursor->key[i] >= x && cursor->key[i] <= y) {
                 result.push_back(cursor->bptr[i]);

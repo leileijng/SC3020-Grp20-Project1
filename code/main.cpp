@@ -84,8 +84,12 @@ int main()
                     stoi(output[6]), stoi(output[7]), stoi(output[8]));
       /// std::cout << "size of record is: " << newRec.size();
       // cout<<"The size is: "<<sizeof(newRec)<<endl;
-      Address addrOnDisk = disk.insertToDisk(&newRec, sizeof(newRec));
-      std::pair<Address *, long long> myPair(&addrOnDisk, stoll(output[9]));
+      Address *addrOnDisk = new Address(disk.insertToDisk(&newRec, sizeof(newRec)));
+
+      // Now store the pointer in the pair
+      std::pair<Address *, long long> myPair(addrOnDisk, stoll(output[9]));
+
+      // Add the pair to the vector
       addressIdVector.push_back(myPair);
     }
     file.close();
@@ -93,35 +97,36 @@ int main()
 
     std::cout << std::string(60, '-') << std::endl;
 
-    cout << "The configuration of Memory Pool:" << endl;
-    std::cout << std::string(60, '-') << std::endl;
-    std::cout << std::setw(30) << std::left << "Parameter"
-              << std::setw(30) << std::left << "Value" << std::endl;
-    std::cout << std::string(60, '-') << std::endl;
+    /*
+        cout << "The configuration of Memory Pool:" << endl;
+        std::cout << std::string(60, '-') << std::endl;
+        std::cout << std::setw(30) << std::left << "Parameter"
+                  << std::setw(30) << std::left << "Value" << std::endl;
+        std::cout << std::string(60, '-') << std::endl;
 
-    // Print the table content
-    std::cout << std::setw(30) << std::left << "Block size:" // self-define
-              << std::setw(30) << std::left << BLOCKSIZE << std::endl;
+        // Print the table content
+        std::cout << std::setw(30) << std::left << "Block size:" // self-define
+                  << std::setw(30) << std::left << BLOCKSIZE << std::endl;
 
-    std::cout << std::setw(30) << std::left << "Total Number of Blocks:" //...
-              << std::setw(30) << std::left << disk.getTotalBlockCount() << std::endl;
+        std::cout << std::setw(30) << std::left << "Total Number of Blocks:" //...
+                  << std::setw(30) << std::left << disk.getTotalBlockCount() << std::endl;
 
-    std::cout << std::setw(30) << std::left << "Used Number of Blocks:" //...
-              << std::setw(30) << std::left << disk.getCurrentBlockCount() << std::endl;
+        std::cout << std::setw(30) << std::left << "Used Number of Blocks:" //...
+                  << std::setw(30) << std::left << disk.getCurrentBlockCount() << std::endl;
 
-    std::cout << std::setw(30) << std::left << "Disk Capacity:" // self-define
-              << std::setw(30) << std::left << disk.getTotalMemorySize() << std::endl;
+        std::cout << std::setw(30) << std::left << "Disk Capacity:" // self-define
+                  << std::setw(30) << std::left << disk.getTotalMemorySize() << std::endl;
 
-    std::cout << std::setw(30) << std::left << "Used Disk Capacity:"
-              << std::setw(30) << std::left << disk.getUsedMemorySize() << std::endl;
+        std::cout << std::setw(30) << std::left << "Used Disk Capacity:"
+                  << std::setw(30) << std::left << disk.getUsedMemorySize() << std::endl;
 
-    // Print the table footer
-    std::cout << std::string(60, '-') << std::endl;
+        // Print the table footer
+        std::cout << std::string(60, '-') << std::endl;
 
-    cout << "1. The number of records:\t" << recordCnt << endl;
-    cout << "2. The size of a record: \t" << disk.getUsedMemorySize() / recordCnt << endl;
-    cout << "3. The number of records stored in a block: \t" << recordCnt / disk.getCurrentBlockCount() << endl;
-    cout << "4. The number of blocks for storing the data: \t" << disk.getCurrentBlockCount() << endl;
+        cout << "1. The number of records:\t" << recordCnt << endl;
+        cout << "2. The size of a record: \t" << disk.getUsedMemorySize() / recordCnt << endl;
+        cout << "3. The number of records stored in a block: \t" << recordCnt / disk.getCurrentBlockCount() << endl;
+        cout << "4. The number of blocks for storing the data: \t" << disk.getCurrentBlockCount() << endl;*/
   }
   else
   {
@@ -138,47 +143,47 @@ int main()
     • the content of the root node (only the keys);
    =============================================================
    */
-  
 
   BPTree tree(3);
   for (const auto &pair : addressIdVector)
   {
     tree.insert(pair.second, pair.first);
   }
-  tree.display(tree.getRoot(), 1);
+  /*
+    tree.display(tree.getRoot(), 1);
 
-  cout << "Info about B+ Tree:" << endl;
-  std::cout << std::string(60, '-') << std::endl;
-  std::cout << std::setw(30) << std::left << "Parameter"
-            << std::setw(30) << std::left << "Value" << std::endl;
-  std::cout << std::string(60, '-') << std::endl;
+    cout << "Info about B+ Tree:" << endl;
+    std::cout << std::string(60, '-') << std::endl;
+    std::cout << std::setw(30) << std::left << "Parameter"
+              << std::setw(30) << std::left << "Value" << std::endl;
+    std::cout << std::string(60, '-') << std::endl;
 
-  // Print the table content
-  std::cout << std::setw(30) << std::left << "Parameter n of B+ Tree:"
-            << std::setw(30) << std::left << tree.getMaxKey() << std::endl;
+    // Print the table content
+    std::cout << std::setw(30) << std::left << "Parameter n of B+ Tree:"
+              << std::setw(30) << std::left << tree.getMaxKey() << std::endl;
 
-  std::cout << std::setw(30) << std::left << "number of nodes:"
-            << std::setw(30) << std::left << tree.getNumNodes() << std::endl;
+    std::cout << std::setw(30) << std::left << "number of nodes:"
+              << std::setw(30) << std::left << tree.getNumNodes() << std::endl;
 
-  std::cout << std::setw(30) << std::left << "number of levels:"
-            << std::setw(30) << std::left << tree.getNumLevels() << std::endl;
+    std::cout << std::setw(30) << std::left << "number of levels:"
+              << std::setw(30) << std::left << tree.getNumLevels() << std::endl;
 
-  //std::cout << std::setw(30) << std::left << "Content of Root:"
-   //         << std::setw(30) << std::left << tree.getRoot() << std::endl;
+    //std::cout << std::setw(30) << std::left << "Content of Root:"
+     //         << std::setw(30) << std::left << tree.getRoot() << std::endl;
 
-  // Print the table footer
-  std::cout << std::string(60, '-') << std::endl;
+    // Print the table footer
+    std::cout << std::string(60, '-') << std::endl;
+  */
 
+  // exercise 3
+  //  format
 
+  // ask user for input (0.5) -> convert to the below format
 
-  //exercise 3
-  // format 
-
-  // ask user for input (0.5) -> convert to the below format 
 
   // search experiment
-  long long lowerBound = 60000000000000000LL;
-  long long upperBound = 70000000000000000LL;
+  long long lowerBound = 50000000000000000LL;
+  long long upperBound = 60000000000000000LL;
   vector<Address *> result = tree.searchRange(lowerBound, upperBound);
   if (result.empty())
   {
@@ -197,8 +202,10 @@ int main()
     Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
 
     // Display the record
-    //record->display();
-    delete record;                                         // Don't forget to delete the dynamically allocated memory
-    //std::cout << "-------------------------" << std::endl; // Separator between records
+    record->display();
+    delete record; // Don't forget to delete the dynamically allocated memory
+    std::cout << "-------------------------" << std::endl; // Separator between records
   }
+  std::cout<<"The total number of records between xxx and xxx: " << result.size()<<endl;
+
 }
