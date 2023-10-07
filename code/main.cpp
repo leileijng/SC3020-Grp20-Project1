@@ -83,84 +83,71 @@ std::vector<std::string> splitStringByTab(const std::string &str)
 
 void exercise1(std::vector<std::pair<Address *, long long> > &addressIdVector, Storage &disk)
 {
-    std::cout << "Reading in data ... " << endl;
-    std::ifstream file("../dataset/games_final.txt"); // actual data
+    std::cout << std::string(60, '=') << std::endl;
+    std::cout << "                          Exercise 1                          " << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
 
-    // Insert data into database and populate list of addresses
+    //cout << "Reading in data ... " << endl;
+    ifstream file("../dataset/games_final.txt"); // actual data
+
     if (file.is_open())
     {
-        cout << "file is open" << endl;
-        std::string line;
-        std::getline(file, line);
-        while (std::getline(file, line))
+        //cout << "file is open" << endl;
+        string line;
+        getline(file, line);
+        while (getline(file, line))
         {
-            // temporary struct Record
-            // Record temp;
             stringstream linestream(line);
-            std::vector<std::string> output = splitStringByTab(line);
+            vector<string> output = splitStringByTab(line);
 
-            // cout << "the size is: " << output.size() << endl;
             if (output.size() < 10)
             {
                 continue;
             }
-            // cout << output[9] <<endl;
+
             Record newRec(output[0], stoll(output[1]), stoi(output[2]), stod(output[3]), stod(output[4]), stod(output[5]),
                           stoi(output[6]), stoi(output[7]), stoi(output[8]), 0);
-            /// std::cout << "size of record is: " << newRec.size();
-            // cout<<"The size is: "<<sizeof(newRec)<<endl;
+
             Address *addrOnDisk = new Address(disk.insertToDisk(&newRec, sizeof(newRec)));
-
-            // Now store the pointer in the pair
-            std::pair<Address *, long long> myPair(addrOnDisk, stoll(output[9]));
-
-            // Add the pair to the vector
+            pair<Address *, long long> myPair(addrOnDisk, stoll(output[9]));
             addressIdVector.push_back(myPair);
         }
         file.close();
 
-        std::cout << std::string(60, '-') << std::endl;
+        int recordCnt = addressIdVector.size();
 
-        /*
-            cout << "The configuration of Memory Pool:" << endl;
-            std::cout << std::string(60, '-') << std::endl;
-            std::cout << std::setw(30) << std::left << "Parameter"
-                      << std::setw(30) << std::left << "Value" << std::endl;
-            std::cout << std::string(60, '-') << std::endl;
+        //cout << string(60, '-') << endl;
+        //cout << "The configuration of Memory Pool:" << endl;
+        //cout << string(60, '-') << endl;
+        cout << setw(30) << left << "Property" << setw(30) << left << "Value" << endl;
+        cout << string(60, '-') << endl;
 
-            // Print the table content
-            std::cout << std::setw(30) << std::left << "Block size:" // self-define
-                      << std::setw(30) << std::left << BLOCKSIZE << std::endl;
+        cout << setw(30) << left << "Block size:" << setw(30) << left << "400B" << endl;
+        cout << setw(30) << left << "Total Number of Blocks:" << setw(30) << left << disk.getTotalBlockCount() << endl;
+        cout << setw(30) << left << "Used Number of Blocks:" << setw(30) << left << disk.getCurrentBlockCount() << endl;
+        cout << setw(30) << left << "Disk Capacity:" << setw(30) << left << disk.getTotalMemorySize() << endl;
+        cout << setw(30) << left << "Used Disk Capacity:" << setw(30) << left << disk.getUsedMemorySize() << endl;
 
-            std::cout << std::setw(30) << std::left << "Total Number of Blocks:" //...
-                      << std::setw(30) << std::left << disk.getTotalBlockCount() << std::endl;
+        cout << string(60, '-') << endl;
+        cout << setw(30) << left << "**Number of Records:**" << setw(30) << left << recordCnt << endl;
+        cout << setw(30) << left << "**Size of a Record:**" << setw(30) << left << disk.getUsedMemorySize() / recordCnt << endl;
+        cout << setw(30) << left << "**Records per Block:**" << setw(30) << left << (recordCnt - (disk.getUsedBlockCapacity() / sizeof(Record))) / (disk.getCurrentBlockCount() - 1) << endl;
+        cout << setw(30) << left << "**Blocks for Storing Data:**" << setw(30) << left << disk.getCurrentBlockCount() << endl;
 
-            std::cout << std::setw(30) << std::left << "Used Number of Blocks:" //...
-                      << std::setw(30) << std::left << disk.getCurrentBlockCount() << std::endl;
-
-            std::cout << std::setw(30) << std::left << "Disk Capacity:" // self-define
-                      << std::setw(30) << std::left << disk.getTotalMemorySize() << std::endl;
-
-            std::cout << std::setw(30) << std::left << "Used Disk Capacity:"
-                      << std::setw(30) << std::left << disk.getUsedMemorySize() << std::endl;
-
-            // Print the table footer
-            std::cout << std::string(60, '-') << std::endl;
-
-            cout << "1. The number of records:\t" << recordCnt << endl;
-            cout << "2. The size of a record: \t" << disk.getUsedMemorySize() / recordCnt << endl;
-            cout << "3. The number of records stored in a block: \t" << recordCnt / disk.getCurrentBlockCount() << endl;
-            cout << "4. The number of blocks for storing the data: \t" << disk.getCurrentBlockCount() << endl;*/
+        cout << string(60, '-') << endl;
+        cout << endl;
     }
     else
     {
         cout << "File unfound." << endl;
     }
-    int recordCnt = addressIdVector.size();
 }
 
 void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVector, BPTree &tree, Storage &disk)
 {
+    std::cout << std::string(60, '*') << std::endl;
+    std::cout << "                          Exercise 2                          " << std::endl;
+    std::cout << std::string(60, '*') << std::endl;
     for (const auto &pair : addressIdVector)
     {
         Address* address = pair.first;
@@ -176,11 +163,9 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
         delete record;
     }
 
-    tree.display(tree.getRoot(), 1);
+    //tree.display(tree.getRoot(), 1);
 
-    cout << "Info about B+ Tree:" << endl;
-    std::cout << std::string(60, '-') << std::endl;
-    std::cout << std::setw(30) << std::left << "Parameter"
+    std::cout << std::setw(30) << std::left << "Property"
               << std::setw(30) << std::left << "Value" << std::endl;
     std::cout << std::string(60, '-') << std::endl;
 
@@ -194,11 +179,13 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
     std::cout << std::setw(30) << std::left << "number of levels:"
               << std::setw(30) << std::left << tree.getNumLevels() << std::endl;
 
-    // std::cout << std::setw(30) << std::left << "Content of Root:"
-    //          << std::setw(30) << std::left << tree.getRoot() << std::endl;
+    std::cout << std::setw(30) << std::left << "Content of Root:"
+              << std::setw(30) << std::left; 
+              tree.displayNode(tree.getRoot());
 
     // Print the table footer
     std::cout << std::string(60, '-') << std::endl;
+    std::cout << endl;
 }
 
 // Exercise 3: Exact match search
@@ -379,7 +366,7 @@ void exercise5(std::vector<std::pair<Address *, long long> > &addressIdVector, l
                       << std::setw(30) << std::left << disk.getUsedMemorySize() << std::endl;   
     std::cout << "The number of nodes before deletion: " << tree.countNodes(tree.getRoot()) << std::endl;
     std::cout << "The number of levels before deletion: " << tree.getNumLevels() << std::endl;
-    
+
    std::vector<Address*> deletedRecords = tree.removeKeysBelow(deleteUpperBound);
    
     if (deletedRecords.empty())

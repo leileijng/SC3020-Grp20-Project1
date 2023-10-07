@@ -786,7 +786,7 @@ void BPTree::display(Node *cursor, int depth) {
   if (cursor == root) puts("-------------------");
 }
 
-/*
+
 void BPTree::displayNode(Node *node) {
     if (node == nullptr) {
         std::cout << "Node is null." << std::endl;
@@ -795,28 +795,29 @@ void BPTree::displayNode(Node *node) {
 
     if (node->IS_LEAF) {
         // Display leaf node
-        for (int i = 0; i < node->size; ++i) {
-            std::cout << "[" << node->bptr[i] << "] " << node->key[i];
-            if (i < node->size - 1) {
+        for (int i = 0; i < MAX + 5; ++i) {
+            std::cout << "[" << (node->bptr[i] ? "Address" : "null") << "] ";
+            std::cout << (node->key[i] ? std::to_string(node->key[i]) : "null");
+            if (i < MAX + 4) {
                 std::cout << " | ";
             }
         }
         // Display next link if exists
-        if (node->ptr[node->size] != nullptr) {
+        if (node->ptr[MAX + 4] != nullptr) {
             std::cout << " -> next link";
         }
     } else {
         // Display internal node
-        for (int i = 0; i < node->size; ++i) {
-            std::cout << node->key[i];
-            if (i < node->size - 1) {
+        for (int i = 0; i < MAX + 5; ++i) {
+            std::cout << (node->ptr[i] ? "Node" : "null") << " ";
+            std::cout << (node->key[i] ? std::to_string(node->key[i]) : "null");
+            if (i < MAX + 4) {
                 std::cout << " | ";
             }
         }
     }
     std::cout << std::endl;
 }
-*/
 
 // Get the root
 Node *BPTree::getRoot() {
