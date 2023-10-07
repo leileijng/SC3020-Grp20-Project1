@@ -20,7 +20,7 @@ public:
            short PTS_home,
            float FG_PCT_home, float FT_PCT_home, float FG3_PCT_home,
            short AST_home, short REB_home,
-           bool HOME_TEAM_WINS);
+           bool HOME_TEAM_WINS, int count);
 
     // Getter and Setter for GAME_DATE_EST
     std::string getGameDateEst() const;
