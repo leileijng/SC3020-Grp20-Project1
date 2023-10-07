@@ -662,9 +662,11 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
 }
 
 std::vector<Address*> BPTree::removeKeysBelow(long long x) {
+  vector <Address*> result;
+
   if (root == NULL) {
     cout << "Tree empty\n";
-    return NULL; // No records deleted
+    return result; // No records deleted
   }
 
   // Start from the root
@@ -676,7 +678,6 @@ std::vector<Address*> BPTree::removeKeysBelow(long long x) {
   }
 
   vector <long long> removeKeys;
-  vector <Address*> result;
   bool finded = false;
   while(true){
     for(int i = 0; i < cursor->size; ++ i){
