@@ -234,8 +234,7 @@ void BPTree::insert(long long x, Address *bptr) {
     // At this point, cursor should be pointing to leaf node that key 'x' should be inserted
     // Iterate through node and check for existence of key
     for (int i = 0; i < cursor->size; ++ i){
-      if(cursor->key[i] == x){
-        cout << "Index " << x << " already existed\n";      // If key exists, return
+      if(cursor->key[i] == x){   // If key exists, return
         return ;
       }
     }
@@ -671,7 +670,7 @@ std::vector<Address*> BPTree::removeKeysBelow(long long x) {
 
   // Start from the root
   Node *cursor = root;
-
+auto start = std::chrono::high_resolution_clock::now();  // Start time
   // Traverse down to the leaf level to find the smallest key
   while (cursor->IS_LEAF == false) {
     cursor = cursor->ptr[0];
@@ -699,6 +698,10 @@ std::vector<Address*> BPTree::removeKeysBelow(long long x) {
     remove(removeKeys[i]);
   }
   
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
+
   return result;
   
   // // Now traverse the leaf nodes to remove keys below x

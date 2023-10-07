@@ -19,14 +19,17 @@ std::map<long long, Address *> recIndex2address;
 void exercise1(std::vector<std::pair<Address *, long long> > &, Storage &disk);
 
 // Exercise 2: Build B+ tree and report statistics
-void exercise2(const std::vector<std::pair<Address *, long long> > &, BPTree &tree);
+void exercise2(const std::vector<std::pair<Address *, long long> > &, BPTree &tree, Storage &disk);
 
 // Exercise 3: Exact match search
-void exercise3(const std::vector<std::pair<Address *, long long> > &, long long target, BPTree &tree, Storage &disk);
+void exercise3(const std::vector<std::pair<Address *, long long> > &, long long , BPTree &, Storage &);
 
 // Exercise 4: Range search
-void exercise4(const std::vector<std::pair<Address *, long long> > &, long long lowerBound, long long upperBound, BPTree &tree, Storage &disk);
+void exercise4(const std::vector<std::pair<Address *, long long> > &, long long , long long , BPTree &, Storage &);
 
+// Exercise 4: Range search
+void exercise5(std::vector<std::pair<Address *, long long> > &, long long , BPTree &, Storage &);
+ 
 // Main function
 int main()
 {
@@ -47,7 +50,7 @@ int main()
     exercise1(addressIdVector, disk);
 
     BPTree tree(3);
-    exercise2(addressIdVector, tree);
+    exercise2(addressIdVector, tree, disk);
 
     long long target = 50000000000000000LL;
     exercise3(addressIdVector, target, tree, disk);
@@ -58,9 +61,7 @@ int main()
 
     // exercise 5 - no yet done
     long long deleteUpperBound = 30000000000000000LL;
-    exercise5(deleteUpperBound, tree, disk);
-    // tree.removeKeysBelow(deleteUpperBound);
-    // tree.remove(28947071061911480);
+    exercise5(addressIdVector, deleteUpperBound, tree, disk);
 }
 
 std::vector<std::string> splitStringByTab(const std::string &str)
@@ -158,7 +159,7 @@ void exercise1(std::vector<std::pair<Address *, long long> > &addressIdVector, S
     int recordCnt = addressIdVector.size();
 }
 
-void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVector, BPTree &tree)
+void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVector, BPTree &tree, Storage &disk)
 {
     for (const auto &pair : addressIdVector)
     {
@@ -266,7 +267,7 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVec
         {
             if (record->getFgPctHome() == targetFgPctHome)
             { // Assuming you have a getFgPctHome() method in your Record class
-                bf_sum_FG3_PCT_home += record->getFg3PctHome()
+                bf_sum_FG3_PCT_home += record->getFg3PctHome();
                 matchingRecords.push_back(*record);
             }
             delete record; // Don't forget to delete the dynamically allocated memory
@@ -352,7 +353,7 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
         {
             if (record->getFgPctHome() >= 0.6 && record->getFg3PctHome() <= 1)
             { // Assuming you have a getFgPctHome() method in your Record class
-                bf_sum_FG3_PCT_home += record->getFg3PctHome()
+                bf_sum_FG3_PCT_home += record->getFg3PctHome();
                 matchingRecords.push_back(*record);
             }
             delete record; // Don't forget to delete the dynamically allocated memory
@@ -372,13 +373,19 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
 }
 
 // Exercise 5: Range remove
-void exercise5(long long deleteUpperBound, BPTree &tree, Storage &disk){
-    std::vector<Address*> deletedRecords = tree.removeKeysBelow(deleteUpperBound);
-
-    if (result.empty())
+void exercise5(std::vector<std::pair<Address *, long long> > &addressIdVector, long long deleteUpperBound, BPTree &tree, Storage &disk){
+   
+    std::cout << std::setw(30) << std::left << "Before deletion: Used Disk Capacity:"
+                      << std::setw(30) << std::left << disk.getUsedMemorySize() << std::endl;   
+    std::cout << "The number of nodes before deletion: " << tree.countNodes(tree.getRoot()) << std::endl;
+    std::cout << "The number of levels before deletion: " << tree.getNumLevels() << std::endl;
+    
+   std::vector<Address*> deletedRecords = tree.removeKeysBelow(deleteUpperBound);
+   
+    if (deletedRecords.empty())
         return;
     int countOfRecords = 0;
-    for (Address *address : result)
+    for (Address *address : deletedRecords)
     {
         Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
         if (record != nullptr)
@@ -388,5 +395,50 @@ void exercise5(long long deleteUpperBound, BPTree &tree, Storage &disk){
             delete record;
         }
     }
-    std::cout << "The total number of records: " << countOfRecords << std::endl;
+
+    std::cout << "The total number of records to delete: " << countOfRecords << std::endl;
+    std::cout << "The number of nodes after deletion: " << tree.countNodes(tree.getRoot()) << std::endl;
+    std::cout << "The number of levels after deletion: " << tree.getNumLevels() << std::endl;
+   
+
+
+     // brute force search
+    cout<<"------------Brute Force!!"<<endl;
+    disk.resetUniqueBlocksAccessed();
+    disk.resetBlocksAccessed();
+    int recordCnt = 0;
+    float bf_sum_FG3_PCT_home = 0;
+    auto start = std::chrono::high_resolution_clock::now();  // Start time
+    for (const auto &pair : addressIdVector)
+    {
+        Address *address = pair.first;
+
+        if (address == nullptr)
+        {
+            std::cout << "Address is null. Skipping this record." << std::endl;
+            continue;
+        }
+        // Load the record from disk
+        Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
+
+        if (record != nullptr)
+        {
+            if (record->getFg3PctHome() <= 0.35)
+            { 
+                recordCnt += 1;
+                disk.deallocate(*address, sizeof(Record));
+            }
+            delete record; // Don't forget to delete the dynamically allocated memory
+        }
+    }
+
+
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
+    // Display the statistics
+    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
+    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
+    std::cout << std::setw(30) << std::left << "Used Disk Capacity:"
+                      << std::setw(30) << std::left << disk.getUsedMemorySize() << std::endl;       
 }

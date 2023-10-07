@@ -42,7 +42,7 @@ class BPTree {
     void printRootKeys(); // Method to print the content of the root node (only the keys)
     void insert(long long, Address *);
     void remove(long long);
-    void removeKeysBelow(long long);
+    vector<Address*> removeKeysBelow(long long);
     void display(Node *, int);
     int countNodes(Node *);
     void displayNode(Node *);

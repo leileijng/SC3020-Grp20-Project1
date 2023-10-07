@@ -74,7 +74,8 @@
     "set": "cpp",
     "__memory": "cpp",
     "filesystem": "cpp",
-    "map": "cpp"
+    "map": "cpp",
+    "memory_resource": "cpp"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "clang",
