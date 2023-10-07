@@ -282,10 +282,10 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVec
         }
     }
 
-    std::cout << "       Comparison Between B+Tree and Brute Force                 " << std::endl;
-
     auto bf_stop = std::chrono::high_resolution_clock::now();
     auto bf_duration = std::chrono::duration_cast<std::chrono::microseconds>(bf_stop - bf_start);
+
+    std::cout << "       Comparison Between B+Tree and Brute Force                 " << std::endl;
 
     std::cout << std::string(60, '=') << std::endl;
     std::cout << std::setw(20) << std::left << "Metric"
@@ -308,75 +308,28 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &addressIdVec
     std::cout << std::string(60, '=') << std::endl;
     std::cout << endl;
 }
-/*
 
-
-    std::cout << "The total number of records: " << countOfRecords << std::endl;
-    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
-    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-    std::cout << "Average of FG3_PCT_home: " << sum_FG3_PCT_home / countOfRecords << std::endl;
-
-    float targetFgPctHome = 0.5;
-    // brute force search
-    cout<<"------------Brute Force!!"<<endl;
-    disk.resetUniqueBlocksAccessed();
-    disk.resetBlocksAccessed();
-    std::vector<Record> matchingRecords;
-    float bf_sum_FG3_PCT_home = 0;
-    auto start = std::chrono::high_resolution_clock::now();  // Start time
-    for (const auto &pair : addressIdVector)
-    {
-        Address *address = pair.first;
-
-        if (address == nullptr)
-        {
-            std::cout << "Address is null. Skipping this record." << std::endl;
-            continue;
-        }
-        // Load the record from disk
-        Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
-
-        if (record != nullptr)
-        {
-            if (record->getFgPctHome() == targetFgPctHome)
-            { // Assuming you have a getFgPctHome() method in your Record class
-                bf_sum_FG3_PCT_home += record->getFg3PctHome();
-                matchingRecords.push_back(*record);
-            }
-            delete record; // Don't forget to delete the dynamically allocated memory
-        }
-    }
-
-
-    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
-    // Display the statistics
-    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
-    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-    std::cout << "Average of FG3_PCT_home: " << bf_sum_FG3_PCT_home / matchingRecords.size() << std::endl;
-    std::cout << "The total number of records between xxx and xxx: " << matchingRecords.size() << endl;
-}*/
 
 // Exercise 4: Range search
 void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVector, long long lowerBound, long long upperBound, BPTree &tree, Storage &disk)
 {
-    cout << "-----------------------exercise 4-------------------------" << endl;
+    std::cout << std::string(60, '+') << std::endl;
+    std::cout << "                          Exercise 4                          " << std::endl;
+    std::cout << std::string(60, '+') << std::endl;
+    
     disk.resetUniqueBlocksAccessed();
     disk.resetBlocksAccessed();
     int indexNodeCount = 0;
     int indexNodeLeafCount = 0;
-    int dataBlockCount = 0;
-    double avgFg3PctHome = 0.0;
 
+    auto bptree_start = std::chrono::high_resolution_clock::now();
     std::vector<Address *> result = tree.searchRange(lowerBound, upperBound, indexNodeCount, indexNodeLeafCount);
+    auto bptree_stop = std::chrono::high_resolution_clock::now();
+    auto bptree_duration = std::chrono::duration_cast<std::chrono::microseconds>(bptree_stop - bptree_start);
 
-    // Display the statistics
-    std::cout << "Number of index nodes (non-leaf) accessed: " << indexNodeCount << std::endl;
-    std::cout << "Number of index nodes (leaf) accessed: " << indexNodeLeafCount << std::endl;
-    // std::cout << "Number of data blocks accessed: " << dataBlockCount << std::endl;
     if (result.empty())
         return;
+
     float sum_FG3_PCT_home = 0;
     int countOfRecords = 0;
     for (Address *address : result)
@@ -392,23 +345,41 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
         {
             sum_FG3_PCT_home += record->getFg3PctHome() * record->getCount();
             countOfRecords += record->getCount();
-            // record->display();  // Assuming you have a display() method in your Record class
             delete record;
         }
     }
 
-    std::cout << "The total number of records: " << countOfRecords << std::endl;
-    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
-    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-    std::cout << "Average of FG3_PCT_home: " << sum_FG3_PCT_home / countOfRecords << std::endl;
+    int blkAccessForBTreeSearch = disk.getUniqueBlocksAccessed();
+
+    // Statistics
+    std::cout << std::string(60, '-') << std::endl;
+    std::cout << std::setw(30) << std::left << "Metric"
+              << std::setw(30) << std::left << "Value" << std::endl;
+    std::cout << std::string(60, '-') << std::endl;
+
+    std::cout << std::setw(30) << std::left << "Total Number of Records"
+              << std::setw(30) << std::left << countOfRecords << std::endl;
+
+    std::cout << std::setw(30) << std::left << "Index Node Accessed"
+              << std::setw(30) << std::left << indexNodeCount + indexNodeLeafCount << std::endl;
+
+    std::cout << std::setw(30) << std::left << "Data Blocks Accessed"
+              << std::setw(30) << std::left << blkAccessForBTreeSearch << std::endl;
+
+    std::cout << std::setw(30) << std::left << "Average of FG3_PCT_home"
+              << std::setw(30) << std::left << sum_FG3_PCT_home / countOfRecords << std::endl;
+
+    std::cout << std::string(60, '=') << std::endl;
+
 
     // brute force search
-    cout << "------------Brute Force!!" << endl;
+    
     disk.resetUniqueBlocksAccessed();
     disk.resetBlocksAccessed();
     std::vector<Record> matchingRecords;
     float bf_sum_FG3_PCT_home = 0;
-    auto start = std::chrono::high_resolution_clock::now(); // Start time
+    auto bf_start = std::chrono::high_resolution_clock::now(); // Start time
+    int cnt = 0;
     for (const auto &pair : addressIdVector)
     {
         Address *address = pair.first;
@@ -423,23 +394,43 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
 
         if (record != nullptr)
         {
-            if (record->getFgPctHome() >= 0.6 && record->getFg3PctHome() <= 1)
+            if (record->getFgPctHome() >= 0.6 && record->getFgPctHome() <= 1)
             { // Assuming you have a getFgPctHome() method in your Record class
                 bf_sum_FG3_PCT_home += record->getFg3PctHome();
                 matchingRecords.push_back(*record);
+                cnt += record->getCount();
             }
             delete record; // Don't forget to delete the dynamically allocated memory
         }
     }
 
-    auto stop = std::chrono::high_resolution_clock::now(); // Stop time
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
-    // Display the statistics
-    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
-    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-    std::cout << "Average of FG3_PCT_home: " << bf_sum_FG3_PCT_home / matchingRecords.size() << std::endl;
-    std::cout << "The total number of records between " << lowerBound << " and " << upperBound << "is: " << matchingRecords.size() << endl;
+    auto bf_stop = std::chrono::high_resolution_clock::now();
+    auto bf_duration = std::chrono::duration_cast<std::chrono::microseconds>(bf_stop - bf_start);
+
+    
+    std::cout << "       Comparison Between B+Tree and Brute Force                 " << std::endl;
+
+    std::cout << std::string(60, '=') << std::endl;
+    std::cout << std::setw(20) << std::left << "Metric"
+              << std::setw(20) << std::left << "B+ Tree"
+              << std::setw(20) << std::left << "Brute Force" << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Number of Records"
+              << std::setw(20) << std::left << countOfRecords
+              << std::setw(20) << std::left << cnt << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Blocks Accessed"
+              << std::setw(20) << std::left << blkAccessForBTreeSearch
+              << std::setw(20) << std::left << disk.getUniqueBlocksAccessed() << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Access Time (ms)"
+              << std::setw(20) << std::left << bptree_duration.count()
+              << std::setw(20) << std::left << bf_duration.count() << std::endl;
+
+    std::cout << std::string(60, '=') << std::endl;
+    std::cout << endl;
+    
 }
 
 // Exercise 5: Range remove

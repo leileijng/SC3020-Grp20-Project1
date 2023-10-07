@@ -150,8 +150,6 @@ std::vector<Address*> BPTree::searchExact(long long x, int &leafNodeCount, int &
 }
 
 std::vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAccessed, int &nonLeafNodeCount) {
-    auto start = std::chrono::high_resolution_clock::now();  // Start time
-
     std::vector<Address*> result;
     nodesAccessed = 0;  // Initialize the counter to zero
     nonLeafNodeCount = 0;
@@ -195,9 +193,6 @@ std::vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAc
         }
         cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
     }
-    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
     return result;
 }
 
