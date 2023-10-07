@@ -93,7 +93,6 @@ int main()
       addressIdVector.push_back(myPair);
     }
     file.close();
-    int recordCnt = addressIdVector.size();
 
     std::cout << std::string(60, '-') << std::endl;
 
@@ -132,6 +131,7 @@ int main()
   {
     cout << "File unfound." << endl;
   }
+    int recordCnt = addressIdVector.size();
 
   /*
    =============================================================
@@ -175,16 +175,17 @@ int main()
     std::cout << std::string(60, '-') << std::endl;
   */
 
-  // exercise 3
-  //  format
-
-  // ask user for input (0.5) -> convert to the below format
-
+  // exercise 3 & 4
+  //  format - please split // please read codes
+  // ask user for input (0.5) -> convert to the below format 50000000000000000LL
+  // ask user for inputs (0.6-1)
 
   // search experiment
-  long long lowerBound = 50000000000000000LL;
-  long long upperBound = 60000000000000000LL;
+  long long lowerBound = 60000000000000000LL;
+  long long upperBound = 100000000000000000LL;
   vector<Address *> result = tree.searchRange(lowerBound, upperBound);
+  // vector<Address *> result = tree.searchExact(lowerBound);
+
   if (result.empty())
   {
     std::cout << "No keys found in the range [" << lowerBound << ", " << upperBound << "]" << std::endl;
@@ -202,10 +203,49 @@ int main()
     Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
 
     // Display the record
-    record->display();
+    //record->display();
     delete record; // Don't forget to delete the dynamically allocated memory
-    std::cout << "-------------------------" << std::endl; // Separator between records
+    // std::cout << "-------------------------" << std::endl; // Separator between records
   }
-  std::cout<<"The total number of records between xxx and xxx: " << result.size()<<endl;
+  std::cout << "The total number of records between xxx and xxx: " << result.size() << endl;
+
+  // brute-force for search
+  std::vector<Record> matchingRecords;
+  float targetFgPctHome = 0.5;
+  for (const auto &pair : addressIdVector)
+  {
+    Address *address = pair.first;
+
+    if (address == nullptr)
+    {
+      std::cout << "Address is null. Skipping this record." << std::endl;
+      continue;
+    }
+
+    // Load the record from disk
+    Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
+
+    if (record != nullptr)
+    {
+      if (record->getFgPctHome() == targetFgPctHome)
+      { // Assuming you have a getFgPctHome() method in your Record class
+        matchingRecords.push_back(*record);
+      }
+      delete record; // Don't forget to delete the dynamically allocated memory
+    }
+  }
+  std::cout << "Records with FG_PCT_home = " << targetFgPctHome << ":" << std::endl;
+  for (const Record &record : matchingRecords)
+  {
+    // record.display();  // Assuming you have a display() method in your Record class
+    // std::cout << "-------------------------" << std::endl;  // Separator between records
+  }
+  std::cout << "The total number of records between xxx and xxx: " << matchingRecords.size() << endl;
+
+  std::cout << "The number of records before delete" << recordCnt << endl;
+  
+  long long deleteUpperBound = 35000000000000000LL;
+  tree.removeKeysBelow(deleteUpperBound);
+  
 
 }

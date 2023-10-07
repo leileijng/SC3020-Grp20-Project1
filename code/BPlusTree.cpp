@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Address.h"
 #include "Record.h"
+#include <cmath>
 using namespace std;
 
 int MAX = 3; // The optimal MAX for the dataset may be approximately 20
@@ -85,6 +86,51 @@ Address *BPTree::search(long long x) {
     cout << "Not found\n";
   }
   return NULL;
+}
+
+    // Function to extract the first 3 digits of a long long number
+    long long getFirst3Digits(long long num) {
+    int length = std::to_string(num).length();
+    return num / std::pow(10, length - 3);
+}
+
+std::vector<Address*> BPTree::searchExact(long long x) {
+    std::vector<Address*> result;
+    if (root == NULL) {
+        std::cout << "Tree is empty\n";
+        return result;
+    }
+
+    long long first3DigitsOfX = getFirst3Digits(x);
+
+    // Start from the root
+    Node *cursor = root;
+
+    // Traverse down to the leaf level
+    while (cursor->IS_LEAF == false) {
+        for (int i = 0; i < cursor->size; i++) {
+            if (x < cursor->key[i]) {
+                cursor = cursor->ptr[i];
+                break;
+            }
+            if (i == cursor->size - 1) {
+                cursor = cursor->ptr[i + 1];
+                break;
+            }
+        }
+    }
+
+    // Now traverse the leaf nodes to collect the keys that match the first 3 digits
+    while (cursor != nullptr) {
+        for (int i = 0; i < cursor->size; i++) {
+            long long first3DigitsOfKey = getFirst3Digits(cursor->key[i]);
+            if (first3DigitsOfKey == first3DigitsOfX) {
+                result.push_back(cursor->bptr[i]);
+            }
+        }
+        cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
+    }
+    return result;
 }
 
 
@@ -589,6 +635,56 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
     removeInternal(parent->key[rightSibling - 1], parent, rightNode);
   }
 }
+
+void BPTree::removeKeysBelow(long long x) {
+  if (root == NULL) {
+    cout << "Tree empty\n";
+    return; // No records deleted
+  }
+
+  int count = 0; // Counter for deleted records
+
+  // Start from the root
+  Node *cursor = root;
+
+  // Traverse down to the leaf level to find the smallest key
+  while (cursor->IS_LEAF == false) {
+    cursor = cursor->ptr[0];
+  }
+
+  
+  // Now traverse the leaf nodes to remove keys below x
+  while (cursor != nullptr) {
+    bool removed = false;
+    for (int i = 0; i < cursor->size; ) {
+      if (cursor->key[i] < x) {
+        cout<<"count"<<count<<endl;
+        long long keyToRemove = cursor->key[i];
+        cout<<"delete index: "<<keyToRemove<<endl;
+        // Remove this key and handle underflow
+        remove(keyToRemove);
+        removed = true;
+        count++; // Increment the counter
+      } else {
+        i++;
+      }
+    }
+
+    if (removed) {
+      // If keys were removed, cursor might have been deleted or changed.
+      // So, we reset cursor to the beginning to continue the operation.
+      cursor = root;
+      while (cursor->IS_LEAF == false) {
+        cursor = cursor->ptr[0];
+      }
+    } else {
+      cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
+    }
+  }
+  cout<<"deleted " <<count << " records"<<endl;
+}
+
+
 
 // Find the parent
 Node *BPTree::findParent(Node *cursor, Node *child) {

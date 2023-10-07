@@ -34,6 +34,7 @@ class BPTree {
     BPTree();
     BPTree(int n = 3); // Constructor that sets MAX
     Address *search(long long);
+    vector<Address*> searchExact(long long);
     vector<Address*> searchRange(long long, long long);
     int getMaxKey(); // Method to get the parameter n of the B+ tree
     int getNumNodes(); // Method to get the number of nodes in the B+ tree
@@ -41,6 +42,7 @@ class BPTree {
     void printRootKeys(); // Method to print the content of the root node (only the keys)
     void insert(long long, Address *);
     void remove(long long);
+    void removeKeysBelow(long long);
     void display(Node *, int);
     int countNodes(Node *);
     void displayNode(Node *);
