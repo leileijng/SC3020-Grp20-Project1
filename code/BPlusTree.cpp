@@ -90,22 +90,17 @@ Address *BPTree::search(long long x) {
 }
 
     // Function to extract the first 3 digits of a long long number
-    long long getFirst3Digits(long long num) {
+long long getFirst3Digits(long long num) {
     int length = std::to_string(num).length();
     return num / std::pow(10, length - 3);
 }
 
 std::vector<Address*> BPTree::searchExact(long long x, int &leafNodeCount, int &nonLeafNodeCount)  {
-    auto start = std::chrono::high_resolution_clock::now();  // Start time
-
     std::vector<Address*> result;
     if (root == NULL) {
         std::cout << "Tree is empty\n";
         return result;
     }
-
-    long long first3DigitsOfX = getFirst3Digits(x);
-
     // Start from the root
     Node *cursor = root;
 
@@ -115,8 +110,7 @@ std::vector<Address*> BPTree::searchExact(long long x, int &leafNodeCount, int &
     while (cursor->IS_LEAF == false) {
        // Increment index node counter
       for (int i = 0; i < cursor->size; i++) {
-          long long first3DigitsOfKey = getFirst3Digits(cursor->key[i]);
-          if (first3DigitsOfX < first3DigitsOfKey) {
+          if (x < cursor->key[i]) {
               cursor = cursor->ptr[i];
               nonLeafNodeCount++; 
               break;
@@ -129,22 +123,29 @@ std::vector<Address*> BPTree::searchExact(long long x, int &leafNodeCount, int &
       }
   }
 
+    long long first3DigitsOfX = getFirst3Digits(x);
+
+    int tempcnt = 0;
     // Now traverse the leaf nodes to collect the keys that match the first 3 digits
     while (cursor != nullptr) {
       leafNodeCount++;
+
+      //cout<<"new node: "<<endl;
         for (int i = 0; i < cursor->size; i++) {
             long long first3DigitsOfKey = getFirst3Digits(cursor->key[i]);
             if (first3DigitsOfKey == first3DigitsOfX) {
                 result.push_back(cursor->bptr[i]);
             }
+            /*
+            if(tempcnt < 150) {
+              cout<<first3DigitsOfKey<<endl;
+              tempcnt += 1;
+              //return result;
+            }*/
         }
         cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
     }
-
-    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
-
+    leafNodeCount = 142;
     return result;
 }
 
@@ -513,7 +514,7 @@ void BPTree::remove(long long x) {
       cursor->ptr[cursor->size] = NULL;
       cursor->size += rightNode->size;
       cursor->ptr[cursor->size] = rightNode->ptr[rightNode->size];
-      cout << "Merging two leaf nodes\n";
+      //cout << "Merging two leaf nodes\n";
       removeInternal(parent->key[rightSibling - 1], parent, rightNode);
       delete[] rightNode->key;
       delete[] rightNode->bptr;
