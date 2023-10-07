@@ -210,7 +210,7 @@ void BPTree::insert(long long x, Address *bptr) {
     // Iterate through node and check for existence of key
     for (int i = 0; i < cursor->size; ++ i){
       if(cursor->key[i] == x){
-        cout << "Index already existed\n";      // If key exists, return
+        cout << "Index " << x << " already existed\n";      // If key exists, return
         return ;
       }
     }
