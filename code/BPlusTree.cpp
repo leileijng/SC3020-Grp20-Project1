@@ -1,6 +1,7 @@
 #include "BPlusTree.h"
 #include <iostream>
 #include "Address.h"
+#include "Record.h"
 using namespace std;
 
 int MAX = 3; // The optimal MAX for the dataset may be approximately 20
@@ -12,18 +13,17 @@ Node::Node() {
 
 // Existing BPTree constructor
 BPTree::BPTree() {
-  root = NULL;  // Initialise root to NULL
-  MAX = 3;      // Initialize MAX to 3
+  root = NULL;
+  MAX = 3; // Initialize MAX to 3
   numNodes = 0; // Initialize numNodes to 0
 }
 
 // New constructor that sets MAX
 BPTree::BPTree(int n) {
-  root = NULL;  // Initialise root to NULL
-  MAX = n;      // Initialize MAX to n
+  root = NULL;
+  MAX = n; // Initialize MAX to n
   numNodes = 0; // Initialize numNodes to 0
 }
-
 
 int BPTree::getMaxKey(){
   return MAX;
@@ -59,7 +59,6 @@ void BPTree::printRootKeys() {
 }
 
 
-// Search operation
 Address *BPTree::search(long long x) {
   if (root == NULL) {
     cout << "Tree is empty\n";
@@ -88,46 +87,48 @@ Address *BPTree::search(long long x) {
   return NULL;
 }
 
-/*// Search range operation
-//TODO:: Add this function to header file 
-Address *BPTree::searchRange(double x) {
-  //convert x into 3 digits by *1000
-  //return type need to change to vector of Address + number of travelled nodes  <pair - refer to main>
 
-  //count the number of nodes travelled 
-  if (root == NULL) {
-    cout << "Tree is empty\n";
-  } else {
+std::vector<Address*> BPTree::searchRange(long long x, long long y) {
+    std::vector<Address*> result;
+    if (root == NULL) {
+        std::cout << "Tree is empty\n";
+        return result;
+    }
+
+    // Start from the root
     Node *cursor = root;
+
+    // Traverse down to the leaf level
     while (cursor->IS_LEAF == false) {
-      for (int i = 0; i < cursor->size; i++) {
-        if (x < cursor->key[i]) {
-          cursor = cursor->ptr[i];
-          break;
+        for (int i = 0; i < cursor->size; i++) {
+            if (x < cursor->key[i]) {
+              cout<<"testing:"<<x<<cursor->key[i]<<endl;
+                cursor = cursor->ptr[i];
+                break;
+            }
+            if (i == cursor->size - 1) {
+                cursor = cursor->ptr[i + 1];
+                break;
+            }
         }
-        if (i == cursor->size - 1) {
-          cursor = cursor->ptr[i + 1];
-          break;
+    }
+
+    // Now traverse the leaf nodes to collect the keys in the range [x, y]
+    while (cursor != nullptr) {
+              cout<<"testing2:"<<x<<cursor->key[0]<<endl;
+        for (int i = 0; i < cursor->size; i++) {
+            if (cursor->key[i] >= x && cursor->key[i] <= y) {
+                result.push_back(cursor->bptr[i]);
+            }
+            // Since the keys are sorted, no point in checking further if we've crossed y
+            if (cursor->key[i] > y) {
+                return result;
+            }
         }
-      }
+        cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
     }
-    for (int i = 0; i < cursor->size; i++) {
-      long long tempKey = cursor->key[i];
-      std::string keyStr = std::to_string(tempKey);
-      //extract first 3 digits and match - 0.5 (e.g.)
-
-      if (keyStr[0] == x) {
-        //find the first match 
-        cout << "Found first node ---- start reading address\n";
-        return cursor->bptr[i];
-        // no return yet, travel forward to find out all matching 
-
-      }
-    }
-    cout << "Not found\n";
-  }
-  return NULL;
-}*/
+    return result;
+}
 
 // Insertion Operation for B+ tree
 void BPTree::insert(long long x, Address *bptr) {
@@ -638,6 +639,38 @@ void BPTree::display(Node *cursor, int depth) {
   }
   if (cursor == root) puts("-------------------");
 }
+
+/*
+void BPTree::displayNode(Node *node) {
+    if (node == nullptr) {
+        std::cout << "Node is null." << std::endl;
+        return;
+    }
+
+    if (node->IS_LEAF) {
+        // Display leaf node
+        for (int i = 0; i < node->size; ++i) {
+            std::cout << "[" << node->bptr[i] << "] " << node->key[i];
+            if (i < node->size - 1) {
+                std::cout << " | ";
+            }
+        }
+        // Display next link if exists
+        if (node->ptr[node->size] != nullptr) {
+            std::cout << " -> next link";
+        }
+    } else {
+        // Display internal node
+        for (int i = 0; i < node->size; ++i) {
+            std::cout << node->key[i];
+            if (i < node->size - 1) {
+                std::cout << " | ";
+            }
+        }
+    }
+    std::cout << std::endl;
+}
+*/
 
 // Get the root
 Node *BPTree::getRoot() {

@@ -59,6 +59,8 @@ public:
 
     // Calculate the size of record in bytes
     int size();
+
+    void display() const; 
 };
 
 #endif

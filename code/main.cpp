@@ -82,9 +82,8 @@ int main()
       // cout << output[9] <<endl;
       Record newRec(output[0], stoll(output[1]), stoi(output[2]), stod(output[3]), stod(output[4]), stod(output[5]),
                     stoi(output[6]), stoi(output[7]), stoi(output[8]));
-       //std::cout << "size of record is: " << newRec.size();
-
-       //cout<<"The size is: "<<sizeof(newRec)<<endl;
+      /// std::cout << "size of record is: " << newRec.size();
+      // cout<<"The size is: "<<sizeof(newRec)<<endl;
       Address addrOnDisk = disk.insertToDisk(&newRec, sizeof(newRec));
       std::pair<Address *, long long> myPair(&addrOnDisk, stoll(output[9]));
       addressIdVector.push_back(myPair);
@@ -101,7 +100,7 @@ int main()
     std::cout << std::string(60, '-') << std::endl;
 
     // Print the table content
-    std::cout << std::setw(30) << std::left << "Block size:" //self-define
+    std::cout << std::setw(30) << std::left << "Block size:" // self-define
               << std::setw(30) << std::left << BLOCKSIZE << std::endl;
 
     std::cout << std::setw(30) << std::left << "Total Number of Blocks:" //...
@@ -110,7 +109,7 @@ int main()
     std::cout << std::setw(30) << std::left << "Used Number of Blocks:" //...
               << std::setw(30) << std::left << disk.getCurrentBlockCount() << std::endl;
 
-    std::cout << std::setw(30) << std::left << "Disk Capacity:" //self-define 
+    std::cout << std::setw(30) << std::left << "Disk Capacity:" // self-define
               << std::setw(30) << std::left << disk.getTotalMemorySize() << std::endl;
 
     std::cout << std::setw(30) << std::left << "Used Disk Capacity:"
@@ -139,7 +138,8 @@ int main()
     • the content of the root node (only the keys);
    =============================================================
    */
-  /*
+  
+
   BPTree tree(3);
   for (const auto &pair : addressIdVector)
   {
@@ -147,27 +147,58 @@ int main()
   }
   tree.display(tree.getRoot(), 1);
 
+  cout << "Info about B+ Tree:" << endl;
+  std::cout << std::string(60, '-') << std::endl;
+  std::cout << std::setw(30) << std::left << "Parameter"
+            << std::setw(30) << std::left << "Value" << std::endl;
+  std::cout << std::string(60, '-') << std::endl;
 
-     cout << "Info about B+ Tree:" << endl;
-    std::cout << std::string(60, '-') << std::endl;
-    std::cout << std::setw(30) << std::left << "Parameter"
-              << std::setw(30) << std::left << "Value" << std::endl;
-    std::cout << std::string(60, '-') << std::endl;
+  // Print the table content
+  std::cout << std::setw(30) << std::left << "Parameter n of B+ Tree:"
+            << std::setw(30) << std::left << tree.getMaxKey() << std::endl;
 
-    // Print the table content
-    std::cout << std::setw(30) << std::left << "Parameter n of B+ Tree:"
-              << std::setw(30) << std::left << tree.getMaxKey() << std::endl;
+  std::cout << std::setw(30) << std::left << "number of nodes:"
+            << std::setw(30) << std::left << tree.getNumNodes() << std::endl;
 
-    std::cout << std::setw(30) << std::left << "number of nodes:"
-              << std::setw(30) << std::left << tree.getNumNodes() << std::endl;
+  std::cout << std::setw(30) << std::left << "number of levels:"
+            << std::setw(30) << std::left << tree.getNumLevels() << std::endl;
 
-    std::cout << std::setw(30) << std::left << "number of levels:"
-              << std::setw(30) << std::left << tree.getNumLevels() << std::endl;
+  //std::cout << std::setw(30) << std::left << "Content of Root:"
+   //         << std::setw(30) << std::left << tree.getRoot() << std::endl;
 
-    std::cout << std::setw(30) << std::left << "Content of Root:"
-              << std::setw(30) << std::left << tree.getRoot() << std::endl;
+  // Print the table footer
+  std::cout << std::string(60, '-') << std::endl;
 
-    // Print the table footer
-    std::cout << std::string(60, '-') << std::endl;*/
 
+
+  //exercise 3
+  // format 
+
+  // ask user for input (0.5) -> convert to the below format 
+
+  // search experiment
+  long long lowerBound = 60000000000000000LL;
+  long long upperBound = 70000000000000000LL;
+  vector<Address *> result = tree.searchRange(lowerBound, upperBound);
+  if (result.empty())
+  {
+    std::cout << "No keys found in the range [" << lowerBound << ", " << upperBound << "]" << std::endl;
+  }
+
+  std::cout << "Keys found in the range [" << lowerBound << ", " << upperBound << "]:" << std::endl;
+  for (Address *address : result)
+  {
+    if (address == nullptr)
+    {
+      std::cout << "Address is null. No data to display." << std::endl;
+    }
+
+    // Assuming you have a Storage object named storage
+    Record *record = static_cast<Record *>(disk.loadFromDisk(*address, sizeof(Record)));
+
+    // Display the record
+    //record->display();
+    delete record;                                         // Don't forget to delete the dynamically allocated memory
+    //std::cout << "-------------------------" << std::endl; // Separator between records
+  }
 }

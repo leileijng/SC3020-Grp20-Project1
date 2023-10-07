@@ -97,3 +97,15 @@ void Record::setHomeTeamWins(bool value) {
 int Record::size(){
     return sizeof(GAME_DATE_EST) + sizeof(TEAM_ID_home) + sizeof(PTS_home) + sizeof(FG_PCT_home) + sizeof(FT_PCT_home) + sizeof(FG3_PCT_home) + sizeof(AST_home) + sizeof(REB_home) + sizeof(HOME_TEAM_WINS);
 };
+
+void Record::display() const {
+    //std::cout << "Game Date: " << GAME_DATE_EST << std::endl;
+    //std::cout << "Team ID (Home): " << TEAM_ID_home << std::endl;
+    //std::cout << "Points (Home): " << PTS_home << std::endl;
+    std::cout << "Field Goal % (Home): " << FG_PCT_home << std::endl;
+    //std::cout << "Free Throw % (Home): " << FT_PCT_home << std::endl;
+    //std::cout << "3-Point Field Goal % (Home): " << FG3_PCT_home << std::endl;
+    //std::cout << "Assists (Home): " << AST_home << std::endl;
+    //std::cout << "Rebounds (Home): " << REB_home << std::endl;
+    //std::cout << "Home Team Wins: " << (HOME_TEAM_WINS ? "Yes" : "No") << std::endl;
+}
