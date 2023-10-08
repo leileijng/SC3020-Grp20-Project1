@@ -49,7 +49,7 @@ int main()
     std::vector<std::pair<Address *, long long> > addressIdVector;
     exercise1(addressIdVector, disk);
 
-    BPTree tree(3);
+    BPTree tree(20);
     exercise2(addressIdVector, tree, disk);
 
     long long target = 50000000000000000LL;
@@ -59,9 +59,9 @@ int main()
     long long upperBound = 100000000000000000LL;
     exercise4(addressIdVector, lowerBound, upperBound, tree, disk);
 
-    // exercise 5 - no yet done
-    long long deleteUpperBound = 30000000000000000LL;
-    exercise5(addressIdVector, deleteUpperBound, tree, disk);
+    // // exercise 5 - no yet done
+    // long long deleteUpperBound = 30000000000000000LL;
+    // exercise5(addressIdVector, deleteUpperBound, tree, disk);
 }
 
 std::vector<std::string> splitStringByTab(const std::string &str)
@@ -148,6 +148,7 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
     std::cout << std::string(60, '*') << std::endl;
     std::cout << "                          Exercise 2                          " << std::endl;
     std::cout << std::string(60, '*') << std::endl;
+    // long long maxId = 0;
     for (const auto &pair : addressIdVector)
     {
         Address *address = pair.first;
@@ -157,6 +158,7 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
         {
             recIndex2address[recIndex] = address;
             tree.insert(recIndex, address);
+            // maxId = max(maxId, recIndex);
         }
 
         Record *record = static_cast<Record *>(disk.loadFromDisk(*recIndex2address[recIndex], sizeof(Record)));
@@ -164,6 +166,7 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
         disk.updateToDisk(record, sizeof(Record), *recIndex2address[recIndex]);
         delete record;
     }
+    // printf("max:%lld\n", maxId);
 
     // tree.display(tree.getRoot(), 1);
 
@@ -188,6 +191,8 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
     // Print the table footer
     std::cout << std::string(60, '-') << std::endl;
     std::cout << endl;
+
+    // tree.travel(tree.getRoot());
 }
 
 // Exercise 3: Exact match search

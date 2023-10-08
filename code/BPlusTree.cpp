@@ -4,9 +4,10 @@
 #include "Record.h"
 #include <cmath>
 #include <chrono> 
+#include <vector>
 using namespace std;
 
-int MAX = 3; // The optimal MAX for the dataset may be approximately 20
+int MAX = 10; // The optimal MAX for the dataset may be approximately 20
 Node::Node() {
   key = new long long[MAX + 5];
   ptr = new Node *[MAX + 5];
@@ -16,7 +17,7 @@ Node::Node() {
 // Existing BPTree constructor
 BPTree::BPTree() {
   root = NULL;
-  MAX = 3; // Initialize MAX to 3
+  MAX = 10; // Initialize MAX
   numNodes = 0; // Initialize numNodes to 0
 }
 
@@ -91,14 +92,14 @@ Address *BPTree::search(long long x) {
 
     // Function to extract the first 3 digits of a long long number
 long long getFirst3Digits(long long num) {
-    int length = std::to_string(num).length();
-    return num / std::pow(10, length - 3);
+    int length = to_string(num).length();
+    return num / pow(10, length - 3);
 }
 
-std::vector<Address*> BPTree::searchExact(long long x, int &leafNodeCount, int &nonLeafNodeCount)  {
-    std::vector<Address*> result;
+vector<Address*> BPTree::searchExact(long long x, int &leafNodeCount, int &nonLeafNodeCount)  {
+    vector<Address*> result;
     if (root == NULL) {
-        std::cout << "Tree is empty\n";
+        cout << "Tree is empty\n";
         return result;
     }
     // Start from the root
@@ -106,56 +107,58 @@ std::vector<Address*> BPTree::searchExact(long long x, int &leafNodeCount, int &
 
     leafNodeCount = 0;
     nonLeafNodeCount = 0;
+
     // Traverse down to the leaf level
     while (cursor->IS_LEAF == false) {
-       // Increment index node counter
+      // Increment index node counter
+      nonLeafNodeCount++;
       for (int i = 0; i < cursor->size; i++) {
           if (x < cursor->key[i]) {
-              cursor = cursor->ptr[i];
-              nonLeafNodeCount++; 
-              break;
+            cursor = cursor->ptr[i];
+            break;
           }
           if (i == cursor->size - 1) {
-              cursor = cursor->ptr[i + 1];
-              nonLeafNodeCount++; 
-              break;
+            cursor = cursor->ptr[i + 1];
+            break;
           }
       }
-  }
+    }
 
     long long first3DigitsOfX = getFirst3Digits(x);
+    // cout << x << endl;
 
-    int tempcnt = 0;
+    // int tempcnt = 0;
+
     // Now traverse the leaf nodes to collect the keys that match the first 3 digits
     while (cursor != nullptr) {
+      if(getFirst3Digits(cursor->key[0]) > first3DigitsOfX) break;
       leafNodeCount++;
 
       //cout<<"new node: "<<endl;
         for (int i = 0; i < cursor->size; i++) {
-            long long first3DigitsOfKey = getFirst3Digits(cursor->key[i]);
-            if (first3DigitsOfKey == first3DigitsOfX) {
-                result.push_back(cursor->bptr[i]);
-            }
-            /*
-            if(tempcnt < 150) {
-              cout<<first3DigitsOfKey<<endl;
-              tempcnt += 1;
-              //return result;
-            }*/
+          long long first3DigitsOfKey = getFirst3Digits(cursor->key[i]);
+          if (first3DigitsOfKey == first3DigitsOfX) {
+            result.push_back(cursor->bptr[i]);
+          }
+          // if(tempcnt < 30) {
+          //   cout<<cursor->key[i]<<endl;
+          //   tempcnt += 1;
+          // }
+          // else return result;
         }
         cursor = cursor->ptr[cursor->size];  // Move to the next leaf node
     }
-    leafNodeCount = 142;
+    // leafNodeCount = 142;
     return result;
 }
 
-std::vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAccessed, int &nonLeafNodeCount) {
-    std::vector<Address*> result;
+vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAccessed, int &nonLeafNodeCount) {
+    vector<Address*> result;
     nodesAccessed = 0;  // Initialize the counter to zero
     nonLeafNodeCount = 0;
 
     if (root == NULL) {
-        std::cout << "Tree is empty\n";
+        cout << "Tree is empty\n";
         return result;
     }
 
@@ -181,6 +184,7 @@ std::vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAc
 
     // Now traverse the leaf nodes to collect the keys in the range [x, y]
     while (cursor != nullptr) {
+        if(cursor->key[0] > y) break;
         nonLeafNodeCount++;  // Increment the counter as we're about to access a new node
         for (int i = 0; i < cursor->size; i++) {
             if (cursor->key[i] >= x && cursor->key[i] <= y) {
@@ -656,7 +660,7 @@ void BPTree::removeInternal(long long x, Node *cursor, Node *child) {
   }
 }
 
-std::vector<Address*> BPTree::removeKeysBelow(long long x) {
+vector<Address*> BPTree::removeKeysBelow(long long x) {
   vector <Address*> result;
 
   if (root == NULL) {
@@ -664,9 +668,10 @@ std::vector<Address*> BPTree::removeKeysBelow(long long x) {
     return result; // No records deleted
   }
 
+  auto start = chrono::high_resolution_clock::now();  // Start time
+
   // Start from the root
   Node *cursor = root;
-auto start = std::chrono::high_resolution_clock::now();  // Start time
   // Traverse down to the leaf level to find the smallest key
   while (cursor->IS_LEAF == false) {
     cursor = cursor->ptr[0];
@@ -694,9 +699,9 @@ auto start = std::chrono::high_resolution_clock::now();  // Start time
     remove(removeKeys[i]);
   }
   
-    auto stop = std::chrono::high_resolution_clock::now();  // Stop time
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
+  auto stop = chrono::high_resolution_clock::now();  // Stop time
+  auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+  cout << "Time taken by function: " << duration.count() << " microseconds" << endl;
 
   return result;
   
@@ -785,34 +790,50 @@ void BPTree::display(Node *cursor, int depth) {
 
 void BPTree::displayNode(Node *node) {
     if (node == nullptr) {
-        std::cout << "Node is null." << std::endl;
+        cout << "Node is null." << endl;
         return;
     }
 
     if (node->IS_LEAF) {
         // Display leaf node
         for (int i = 0; i < MAX + 5; ++i) {
-            std::cout << "[" << (node->bptr[i] ? "Address" : "null") << "] ";
-            std::cout << (node->key[i] ? std::to_string(node->key[i]) : "null");
+            cout << "[" << (node->bptr[i] ? "Address" : "null") << "] ";
+            cout << (node->key[i] ? to_string(node->key[i]) : "null");
             if (i < MAX + 4) {
-                std::cout << " | ";
+                cout << " | ";
             }
         }
         // Display next link if exists
         if (node->ptr[MAX + 4] != nullptr) {
-            std::cout << " -> next link";
+            cout << " -> next link";
         }
     } else {
         // Display internal node
         for (int i = 0; i < MAX + 5; ++i) {
-            std::cout << (node->ptr[i] ? "Node" : "null") << " ";
-            std::cout << (node->key[i] ? std::to_string(node->key[i]) : "null");
+            cout << (node->ptr[i] ? "Node" : "null") << " ";
+            cout << (node->key[i] ? to_string(node->key[i]) : "null");
             if (i < MAX + 4) {
-                std::cout << " | ";
+                cout << " | ";
             }
         }
     }
-    std::cout << std::endl;
+    cout << endl;
+}
+
+void BPTree::travel(Node *cursor) {
+  if(cursor == NULL) return ;
+  while(cursor->IS_LEAF != true) cursor = cursor->ptr[0];
+  int count = 0;
+  while(cursor != NULL){
+    cout << cursor->key[0] << " " << cursor->size << endl;
+    for(int i = 0; i < cursor->size; ++ i){
+      printf("%lld ", cursor->key[i]);
+      count ++;
+      // printf("%d\n", count);
+    }
+    cursor = cursor->ptr[cursor->size];
+  }
+  puts("");
 }
 
 // Get the root

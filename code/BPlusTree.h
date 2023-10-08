@@ -2,6 +2,7 @@
 #define BPTREE_H
 
 #include <iostream>
+#include <vector>
 #include "Address.h"
 using namespace std;
 
@@ -32,7 +33,7 @@ class BPTree {
 
   public:
     BPTree();
-    BPTree(int n = 3); // Constructor that sets MAX
+    BPTree(int n = 10); // Constructor that sets MAX
     Address *search(long long);
     vector<Address*> searchExact(long long, int &, int &);
     vector<Address*> searchRange(long long, long long, int &, int &);
@@ -44,6 +45,7 @@ class BPTree {
     void remove(long long);
     vector<Address*> removeKeysBelow(long long);
     void display(Node *, int);
+    void travel(Node *);
     int countNodes(Node *);
     void displayNode(Node *);
     Node *getRoot();
