@@ -55,9 +55,9 @@ int main()
     long long target = 50000000000000000LL;
     exercise3(addressIdVector, target, tree, disk);
 
-    long long lowerBound = 60000000000000000LL;
-    long long upperBound = 100000000000000000LL;
-    exercise4(addressIdVector, lowerBound, upperBound, tree, disk);
+    // long long lowerBound = 60000000000000000LL;
+    // long long upperBound = 100000000000000000LL;
+    // exercise4(addressIdVector, lowerBound, upperBound, tree, disk);
 
     // // exercise 5 - no yet done
     // long long deleteUpperBound = 30000000000000000LL;

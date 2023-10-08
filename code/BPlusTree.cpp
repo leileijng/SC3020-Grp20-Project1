@@ -7,7 +7,7 @@
 #include <vector>
 using namespace std;
 
-int MAX = 10; // The optimal MAX for the dataset may be approximately 20
+int MAX = 20; // The optimal MAX for the dataset may be approximately 20
 Node::Node() {
   key = new long long[MAX + 5];
   ptr = new Node *[MAX + 5];
@@ -17,7 +17,7 @@ Node::Node() {
 // Existing BPTree constructor
 BPTree::BPTree() {
   root = NULL;
-  MAX = 10; // Initialize MAX
+  MAX = 20; // Initialize MAX
   numNodes = 0; // Initialize numNodes to 0
 }
 
