@@ -425,7 +425,7 @@ void BPTree::remove(long long x) {
       }
     }
     if (!found) {
-      cout << "Not found\n";
+      //cout << "1 Not found\n";
       return;
     }
     for (int i = pos; i < cursor->size; i++) {
@@ -681,7 +681,7 @@ vector<Address*> BPTree::removeKeysBelow(long long x) {
   bool finded = false;
   while(true){
     for(int i = 0; i < cursor->size; ++ i){
-      if(cursor->key[i] < x){
+      if(getFirst3Digits(cursor->key[i]) <= getFirst3Digits(x)){
         removeKeys.push_back(cursor->key[i]);
         result.push_back(cursor->bptr[i]);
       } else {
