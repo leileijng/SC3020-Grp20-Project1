@@ -33,7 +33,9 @@ void exercise5(std::vector<std::pair<Address *, long long> > &, long long, BPTre
 // Main function
 int main()
 {
+    // Define BLOCKSIZE to be 400 bytes
     int BLOCKSIZE = 400;
+
     // Create memory pools for the disk and the index, total 500MB
     // The split is determined empirically. We split so that we can have a contiguous disk address space for records
     std::cout << "creating the disk on the stack for records, index" << endl;
@@ -46,20 +48,30 @@ int main()
     std::cout << "Number of record blocks accessed in search operation reset to: 0" << endl;
     std::cout << "Number of index blocks accessed in search operation reset to: 0" << endl;
 
+    // cntOfRecords used to store total number of records
     int cntOfRecords = 0;
+
+    // Address vector is used to keep track of the address of all records
     std::vector<std::pair<Address *, long long> > addressIdVector;
+
+    // Exercise 1: Store data on disk and report statistics
     exercise1(addressIdVector, disk);
+
+    // Total number of records stored in cntOfRecords and is equals to size of address vector
     cntOfRecords = addressIdVector.size();
 
+    // Exercise 2: Create B+ Tree with maximum number of keys = 20
     BPTree tree(20);
-    exercise2(addressIdVector, tree, disk);
+    exercise2(addressIdVector, tree, disk);  // Call function to build B+ tree and report statistics
 
+    // Exercise 3: Define exact search target
     long long target = 50000000000000000LL;
-    exercise3(addressIdVector, target, tree, disk);
+    exercise3(addressIdVector, target, tree, disk);  // Call function to perform exact search
 
+    // Exercise 4: Define lower and upper bounds for range search
     long long lowerBound = 60000000000000000LL;
     long long upperBound = 100000000000000000LL;
-    exercise4(addressIdVector, lowerBound, upperBound, tree, disk);
+    exercise4(addressIdVector, lowerBound, upperBound, tree, disk);  // Call function to perform range search
 
     // // exercise 5 - no yet done
     long long deleteUpperBound = 35000000000000000LL;
@@ -89,12 +101,10 @@ void exercise1(std::vector<std::pair<Address *, long long> > &addressIdVector, S
     std::cout << "                          Exercise 1                          " << std::endl;
     std::cout << std::string(60, '=') << std::endl;
 
-    // cout << "Reading in data ... " << endl;
     ifstream file("../dataset/games_final.txt"); // actual data
 
     if (file.is_open())
     {
-        // cout << "file is open" << endl;
         string line;
         getline(file, line);
         while (getline(file, line))
@@ -118,9 +128,6 @@ void exercise1(std::vector<std::pair<Address *, long long> > &addressIdVector, S
 
         int recordCnt = addressIdVector.size();
 
-        // cout << string(60, '-') << endl;
-        // cout << "The configuration of Memory Pool:" << endl;
-        // cout << string(60, '-') << endl;
         cout << setw(30) << left << "Property" << setw(30) << left << "Value" << endl;
         cout << string(60, '-') << endl;
 
