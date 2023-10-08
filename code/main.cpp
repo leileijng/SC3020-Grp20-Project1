@@ -27,7 +27,7 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &, long long,
 // Exercise 4: Range search
 void exercise4(const std::vector<std::pair<Address *, long long> > &, long long, long long, BPTree &, Storage &);
 
-// Exercise 4: Range search
+// Exercise 5: Range remove
 void exercise5(std::vector<std::pair<Address *, long long> > &, long long, BPTree &, Storage &, int);
 
 // Main function
@@ -73,7 +73,6 @@ int main()
     long long upperBound = 100000000000000000LL;
     exercise4(addressIdVector, lowerBound, upperBound, tree, disk);  // Call function to perform range search
 
-    // // exercise 5 - no yet done
     long long deleteUpperBound = 35000000000000000LL;
     exercise5(addressIdVector, deleteUpperBound, tree, disk, cntOfRecords);
 }
@@ -177,7 +176,7 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
     }
     // printf("max:%lld\n", maxId);
 
-    // tree.display(tree.getRoot(), 1);
+    tree.display(tree.getRoot(), 1);
 
     std::cout << std::setw(30) << std::left << "Property"
               << std::setw(30) << std::left << "Value" << std::endl;

@@ -65,6 +65,14 @@ void BPTree::printRootKeys() {
   cout << endl;
 }
 
+long long BPTree::findMaxKey(){
+  Node* cursor = root;
+  while(cursor->IS_LEAF != true){
+    cursor = cursor->ptr[cursor->size];
+  }
+  return cursor->key[(cursor->size)-1];
+}
+
 
 Address *BPTree::search(long long x) {
   if (root == NULL) {
@@ -166,6 +174,8 @@ vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAccesse
         return result;
     }
 
+    long long maxKey = findMaxKey();
+
     // Start from the root
     Node *cursor = root;
     nodesAccessed++;  // Increment the counter as we've accessed the root
@@ -195,7 +205,7 @@ vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAccesse
                 result.push_back(cursor->bptr[i]);
             }
             // Since the keys are sorted, no point in checking further if we've crossed y
-            if (cursor->key[i] > y) {
+            if (cursor->key[i] > y || cursor->key[i] == maxKey) {
                 return result;
             }
         }
@@ -840,18 +850,20 @@ void BPTree::displayNode(Node *node) {
 
 void BPTree::travel(Node *cursor) {
   if(cursor == NULL) return ;
+  long long maxKey = findMaxKey();
+  cout << "maxKey: " << maxKey << endl;
   while(cursor->IS_LEAF != true) cursor = cursor->ptr[0];
   int count = 0;
   while(cursor != NULL){
     cout << cursor->key[0] << " " << cursor->size << endl;
     for(int i = 0; i < cursor->size; ++ i){
       printf("%lld ", cursor->key[i]);
-      count ++;
-      // printf("%d\n", count);
+      if(cursor->key[i] == maxKey) return;
     }
+    puts("");
     cursor = cursor->ptr[cursor->size];
   }
-  puts("");
+  puts("hhh");
 }
 
 // Get the root

@@ -41,6 +41,7 @@ class BPTree {
     int getNumNodes(); // Method to get the number of nodes in the B+ tree
     int getNumLevels(); // Method to get the number of levels in the B+ tree
     void printRootKeys(); // Method to print the content of the root node (only the keys)
+    long long findMaxKey();
     void insert(long long, Address *);
     void remove(long long);
     vector<Address*> removeKeysBelow(long long);
