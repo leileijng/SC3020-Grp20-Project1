@@ -28,7 +28,7 @@ void exercise3(const std::vector<std::pair<Address *, long long> > &, long long,
 void exercise4(const std::vector<std::pair<Address *, long long> > &, long long, long long, BPTree &, Storage &);
 
 // Exercise 4: Range search
-void exercise5(std::vector<std::pair<Address *, long long> > &, long long, BPTree &, Storage &);
+void exercise5(std::vector<std::pair<Address *, long long> > &, long long, BPTree &, Storage &, int);
 
 // Main function
 int main()
@@ -46,8 +46,10 @@ int main()
     std::cout << "Number of record blocks accessed in search operation reset to: 0" << endl;
     std::cout << "Number of index blocks accessed in search operation reset to: 0" << endl;
 
+    int cntOfRecords = 0;
     std::vector<std::pair<Address *, long long> > addressIdVector;
     exercise1(addressIdVector, disk);
+    cntOfRecords = addressIdVector.size();
 
     BPTree tree(20);
     exercise2(addressIdVector, tree, disk);
@@ -61,7 +63,7 @@ int main()
 
     // // exercise 5 - no yet done
     long long deleteUpperBound = 35000000000000000LL;
-    exercise5(addressIdVector, deleteUpperBound, tree, disk);
+    exercise5(addressIdVector, deleteUpperBound, tree, disk, cntOfRecords);
 }
 
 std::vector<std::string> splitStringByTab(const std::string &str)
@@ -185,7 +187,7 @@ void exercise2(const std::vector<std::pair<Address *, long long> > &addressIdVec
               << std::setw(30) << std::left << tree.getNumLevels() << std::endl;
 
     std::cout << std::setw(30) << std::left << "Content of Root:"
-              << std::setw(30) << std::left;
+              << std::setw(30) << std::left <<endl;
     tree.displayNode(tree.getRoot());
 
     // Print the table footer
@@ -439,14 +441,23 @@ void exercise4(const std::vector<std::pair<Address *, long long> > &addressIdVec
 }
 
 // Exercise 5: Range remove
-void exercise5(std::vector<std::pair<Address *, long long> > &addressIdVector, long long deleteUpperBound, BPTree &tree, Storage &disk)
+void exercise5(std::vector<std::pair<Address *, long long> > &addressIdVector, long long deleteUpperBound, BPTree &tree, Storage &disk, int cnt)
 {
-    std::cout << std::setw(30) << std::left << "Before deletion: Used Disk Capacity:"
-              << std::setw(30) << std::left << disk.getUsedMemorySize() << std::endl;
-    std::cout << "The number of nodes before deletion: " << tree.countNodes(tree.getRoot()) << std::endl;
-    std::cout << "The number of levels before deletion: " << tree.getNumLevels() << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
+    std::cout << "                          Exercise 5                        " << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
+// before deletion
+    size_t memB4Deletion = disk.getUsedMemorySize();
+    int numOfNumB4Deletion = tree.countNodes(tree.getRoot());
+    int numOfTreeB4Deletion = tree.getNumLevels();
+
+    auto bptree_start = std::chrono::high_resolution_clock::now();
 
     std::vector<Address *> deletedRecords = tree.removeKeysBelow(deleteUpperBound);
+
+    auto bptree_stop = std::chrono::high_resolution_clock::now();
+    auto bptree_duration = std::chrono::duration_cast<std::chrono::microseconds>(bptree_stop - bptree_start);
+
 
     if (deletedRecords.empty())
         return;
@@ -462,12 +473,7 @@ void exercise5(std::vector<std::pair<Address *, long long> > &addressIdVector, l
         }
     }
 
-    std::cout << "The total number of records to delete: " << countOfRecords << std::endl;
-    std::cout << "The number of nodes after deletion: " << tree.countNodes(tree.getRoot()) << std::endl;
-    std::cout << "The number of levels after deletion: " << tree.getNumLevels() << std::endl;
 
-    // brute force search
-    cout << "------------Brute Force!!" << endl;
     disk.resetUniqueBlocksAccessed();
     disk.resetBlocksAccessed();
     int recordCnt = 0;
@@ -500,10 +506,67 @@ void exercise5(std::vector<std::pair<Address *, long long> > &addressIdVector, l
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     std::cout << "Time taken by function: " << duration.count() << " microseconds" << std::endl;
 
-    std::cout << "Records to delete: " << recordCnt << std::endl;
-    // Display the statistics
-    std::cout << "The number of data blocks the process accesses: " << disk.getUniqueBlocksAccessed() << std::endl;
-    std::cout << "The number of data blocks the process accesses (non-unique): " << disk.getBlocksAccessedCount() << std::endl;
-    std::cout << std::setw(30) << std::left << "Used Disk Capacity:"
-              << std::setw(30) << std::left << disk.getUsedMemorySize() << std::endl;
+
+
+    //after deletion 
+    size_t memNew = disk.getUsedMemorySize();
+    int numOfNumNew = tree.countNodes(tree.getRoot());
+    int numOfTreeNew = tree.getNumLevels();
+
+    
+    // Table to compare before and after
+    std::cout << std::string(80, '-') << std::endl;
+    std::cout << std::setw(20) << std::left << "Metric"
+              << std::setw(20) << std::left << "Before Deletion"
+              << std::setw(20) << std::left << "After Deletion"
+              << std::setw(20) << std::left << "Change" << std::endl;
+    std::cout << std::string(80, '-') << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Used Disk Capacity"
+              << std::setw(20) << std::left << memB4Deletion
+              << std::setw(20) << std::left << memNew
+              << std::setw(20) << std::left << memB4Deletion - memNew << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Number of Nodes"
+              << std::setw(20) << std::left << numOfNumB4Deletion
+              << std::setw(20) << std::left << numOfNumNew
+              << std::setw(20) << std::left << numOfNumB4Deletion - numOfNumNew << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Number of Levels"
+              << std::setw(20) << std::left << numOfTreeB4Deletion
+              << std::setw(20) << std::left << numOfTreeNew
+              << std::setw(20) << std::left << numOfTreeB4Deletion - numOfTreeNew << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Records Deleted"
+              << std::setw(20) << std::left << cnt
+              << std::setw(20) << std::left << cnt -  countOfRecords 
+              << std::setw(20) << std::left << countOfRecords << std::endl;
+
+    std::cout << std::setw(30) << std::left << "Content of Root:"
+              << std::setw(30) << std::left <<endl;
+    tree.displayNode(tree.getRoot());
+    
+    std::cout << std::string(80, '=') << std::endl;
+
+    std::cout << "                  Comparison Between B+Tree and Brute Force                 " << std::endl;
+    std::cout << std::string(80, '-') << std::endl;
+    std::cout << std::setw(20) << std::left << "Metric"
+              << std::setw(20) << std::left << "B+ Tree"
+              << std::setw(20) << std::left << "Brute Force" << std::endl;
+    std::cout << std::string(80, '-') << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Number of Records"
+              << std::setw(20) << std::left << countOfRecords
+              << std::setw(20) << std::left << recordCnt << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Blocks Accessed"
+              << std::setw(20) << std::left << "Not Required"
+              << std::setw(20) << std::left << disk.getUniqueBlocksAccessed() << std::endl;
+
+    std::cout << std::setw(20) << std::left << "Access Time (ms)"
+              << std::setw(20) << std::left << bptree_duration.count()
+              << std::setw(20) << std::left << duration.count() << std::endl;
+
+    std::cout << std::string(80, '-') << std::endl;
+    std::cout << endl;
 }

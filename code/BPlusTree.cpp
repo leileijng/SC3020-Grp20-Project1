@@ -5,6 +5,10 @@
 #include <cmath>
 #include <chrono> 
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <map>
 using namespace std;
 
 int MAX = 20; // The optimal MAX for the dataset may be approximately 20
@@ -668,8 +672,6 @@ vector<Address*> BPTree::removeKeysBelow(long long x) {
     return result; // No records deleted
   }
 
-  auto start = chrono::high_resolution_clock::now();  // Start time
-
   // Start from the root
   Node *cursor = root;
   // Traverse down to the leaf level to find the smallest key
@@ -698,11 +700,6 @@ vector<Address*> BPTree::removeKeysBelow(long long x) {
   for(int i = 0; i < removeKeys.size(); ++ i){
     remove(removeKeys[i]);
   }
-  
-  auto stop = chrono::high_resolution_clock::now();  // Stop time
-  auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-  cout << "Time taken by function: " << duration.count() << " microseconds" << endl;
-
   return result;
   
   // // Now traverse the leaf nodes to remove keys below x
@@ -794,30 +791,51 @@ void BPTree::displayNode(Node *node) {
         return;
     }
 
+    const int maxCellWidth = 20;  // Adjust as needed
+    const int minCellWidth = 10;  // Minimum width for null or empty cells
+
+    cout << "----------------------------- Node Start -----------------------------" << endl;
+
     if (node->IS_LEAF) {
         // Display leaf node
+        cout << "| Type: Leaf" << endl;
+        cout << "|---------------------------------------------------------------------|" << endl;
+        cout << "| Address | Key       |" << endl;
+        cout << "|---------------------------------------------------------------------|" << endl;
+        cout << "|";
         for (int i = 0; i < MAX + 5; ++i) {
-            cout << "[" << (node->bptr[i] ? "Address" : "null") << "] ";
-            cout << (node->key[i] ? to_string(node->key[i]) : "null");
+            int cellWidth = (node->bptr[i] && node->key[i]) ? maxCellWidth : minCellWidth;
+            cout << setw(cellWidth) << (node->bptr[i] ? "Address" : "null");
+            cout << setw(cellWidth) << (node->key[i] ? to_string(node->key[i]) : "null");
             if (i < MAX + 4) {
-                cout << " | ";
+                cout << "|";
             }
         }
+        cout << endl;
         // Display next link if exists
         if (node->ptr[MAX + 4] != nullptr) {
-            cout << " -> next link";
+            cout << "|---------------------------------------------------------------------|" << endl;
+            cout << "| Next Link: Exists" << endl;
         }
     } else {
         // Display internal node
+        cout << "| Type: Internal" << endl;
+        cout << "|---------------------------------------------------------------------|" << endl;
+        cout << "| Node   | Key       |" << endl;
+        cout << "|---------------------------------------------------------------------|" << endl;
+        cout << "|";
         for (int i = 0; i < MAX + 5; ++i) {
-            cout << (node->ptr[i] ? "Node" : "null") << " ";
-            cout << (node->key[i] ? to_string(node->key[i]) : "null");
+            int cellWidth = (node->ptr[i] && node->key[i]) ? maxCellWidth : minCellWidth;
+            cout << setw(cellWidth) << (node->ptr[i] ? "Node" : "null");
+            cout << setw(cellWidth) << (node->key[i] ? to_string(node->key[i]) : "null");
             if (i < MAX + 4) {
-                cout << " | ";
+                cout << "|";
             }
         }
+        cout << endl;
     }
-    cout << endl;
+
+    cout << "------------------------------ Node End ------------------------------" << endl;
 }
 
 void BPTree::travel(Node *cursor) {
