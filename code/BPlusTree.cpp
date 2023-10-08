@@ -205,7 +205,7 @@ vector<Address*> BPTree::searchRange(long long x, long long y, int &nodesAccesse
                 result.push_back(cursor->bptr[i]);
             }
             // Since the keys are sorted, no point in checking further if we've crossed y
-            if (cursor->key[i] == maxKey) {
+            if (cursor->key[i] > y || cursor->key[i] == maxKey) {
                 return result;
             }
         }
